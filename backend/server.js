@@ -136,6 +136,39 @@ async function buildStats() {
   };
 }
 
+
+// ---- Noticias del sitio oficial (Licey.com, WordPress) ----
+const NEWS_BASE = process.env.NEWS_BASE || 'https://www.licey.com';
+const NEWS_MS = 15 * 60 * 1000;
+let newsCache = null, newsAt = 0;
+const ENT = { '&amp;':'&', '&quot;':'"', '&#039;':"'", '&#8216;':'‘', '&#8217;':'’', '&rsquo;':'’', '&#8220;':'“', '&#8221;':'”', '&#8211;':'–', '&#8212;':'—', '&#8230;':'…', '&hellip;':'…', '&nbsp;':' ' };
+const plain = h => String(h || '').replace(/<!\[CDATA\[|\]\]>/g, '').replace(/<[^>]*>/g, ' ').replace(/&#?\w+;/g, m => ENT[m] || m).replace(/\s+/g, ' ').trim();
+const short = (t, n = 180) => t.length > n ? t.slice(0, n).replace(/\s+\S*$/, '') + '…' : t;
+const officialUrl = u => { try { const x = new URL(u); return x.protocol === 'https:' && /(^|\.)licey\.com$/.test(x.hostname) ? x.href : null; } catch { return null; } };
+async function fetchText(url) {
+  const r = await fetch(url, { headers: { 'User-Agent': 'CherchaAzul/1.0 (+https://cherchaazul.netlify.app)', Accept: 'application/json, application/rss+xml, text/xml, */*' }, signal: AbortSignal.timeout(15000) });
+  if (!r.ok) throw new Error(`HTTP ${r.status} en ${url}`);
+  return r.text();
+}
+async function newsFromRest() {
+  const posts = JSON.parse(await fetchText(`${NEWS_BASE}/wp-json/wp/v2/posts?per_page=12&_embed=wp:featuredmedia`));
+  if (!Array.isArray(posts)) throw new Error('Respuesta REST inesperada');
+  return posts.map(p => ({ title: plain(p.title?.rendered), url: officialUrl(p.link), date: p.date_gmt ? p.date_gmt + 'Z' : (p.date || null), excerpt: short(plain(p.excerpt?.rendered)), image: officialUrl(p._embedded?.['wp:featuredmedia']?.[0]?.source_url) }));
+}
+async function newsFromRss() {
+  const xml = await fetchText(`${NEWS_BASE}/feed/`);
+  const tag = (b, t) => (b.match(new RegExp(`<${t}[^>]*>([\\s\\S]*?)</${t}>`)) || [])[1] || '';
+  return [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)].slice(0, 12).map(m => { const b = m[1]; const img = (b.match(/<media:content[^>]*url="([^"]+)"/) || b.match(/<enclosure[^>]*url="([^"]+)"/) || b.match(/<img[^>]*src="([^"]+)"/) || [])[1];
+    return { title: plain(tag(b, 'title')), url: officialUrl(plain(tag(b, 'link'))), date: tag(b, 'pubDate') ? new Date(plain(tag(b, 'pubDate'))).toISOString() : null, excerpt: short(plain(tag(b, 'description'))), image: officialUrl(img) }; });
+}
+async function buildNews() {
+  let items;
+  try { items = await newsFromRest(); } catch (e) { console.error('REST falló, probando RSS:', e.message); items = await newsFromRss(); }
+  items = items.filter(n => n.title && n.url);
+  if (!items.length) throw new Error('Sin noticias en la fuente');
+  return { source: 'Licey.com (sitio oficial del Club Atlético Licey)', updatedAt: new Date().toISOString(), items };
+}
+
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   res.setHeader('Access-Control-Allow-Origin', process.env.ALLOWED_ORIGIN || '*');
@@ -146,8 +179,18 @@ const server = http.createServer(async (req, res) => {
   if (url.pathname === '/health') {
     res.writeHead(200); return res.end(JSON.stringify({ ok: true, service: 'chercha-azul-api', season: SEASON }));
   }
+  if (url.pathname === '/api/news') {
+    try {
+      if (!newsCache || Date.now() - newsAt >= NEWS_MS) { newsCache = await buildNews(); newsAt = Date.now(); }
+      res.writeHead(200, { 'Cache-Control': 'public, max-age=300' }); return res.end(JSON.stringify(newsCache));
+    } catch (error) {
+      console.error(error);
+      if (newsCache) { res.writeHead(200, { 'X-Stale': '1' }); return res.end(JSON.stringify({ ...newsCache, stale: true })); }
+      res.writeHead(502); return res.end(JSON.stringify({ error: 'No se pudieron consultar las noticias', detail: error.message }));
+    }
+  }
   if (url.pathname !== '/api/stats' && url.pathname !== '/api/lidom') {
-    res.writeHead(404); return res.end(JSON.stringify({ error: 'Ruta no encontrada', available: ['/health', '/api/stats'] }));
+    res.writeHead(404); return res.end(JSON.stringify({ error: 'Ruta no encontrada', available: ['/health', '/api/stats', '/api/news'] }));
   }
   try {
     if (cached && Date.now() - cachedAt < CACHE_MS) {
