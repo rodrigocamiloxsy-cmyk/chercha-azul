@@ -181,7 +181,7 @@
       const ms = t - Date.now(); let c;
       if (ms <= 0) c = "¡Está por empezar o ya empezó!";
       else { const h = Math.floor(ms/36e5), m = Math.floor(ms%36e5/6e4), d = Math.floor(h/24); c = d > 0 ? `${d} d ${h%24} h ${m} min` : `${h} h ${m} min ${Math.floor(ms%6e4/1e3)} s`; }
-      b.innerHTML = `<b>${today ? "HOY JUEGA EL LICEY" : "PRÓXIMO JUEGO"}</b><span>vs ${escapeText(rival)} · ${escapeText(dt(g.gameDate))}</span><span class="gb-count">${escapeText(c)}</span><a href="#ruta" data-view="ruta">Ver transmisión ↗</a>`;
+      b.innerHTML = `<b>${today ? "HOY SIIII LICEYSTASSSSSSSSS" : "PRÓXIMO JUEGO"}</b><span>vs ${escapeText(rival)} · ${escapeText(dt(g.gameDate))}</span><span class="gb-count">${escapeText(c)}</span><a href="#ruta" data-view="ruta">Ver transmisión ↗</a>`;
     };
     b.onclick = e => { const a = e.target.closest("a[data-view]"); if (a) { e.preventDefault(); showPage(a.dataset.view); } }; b.hidden = false; tick(); bannerTimer = setInterval(tick, 1000);
   }
@@ -212,7 +212,7 @@
         st.forEach(team => { const tr = document.createElement("tr"); if (isLicey(team.team)) tr.className = "me";
           [team.team, team.wins, team.losses, team.pct, team.streak].forEach(val => { const td=document.createElement("td"); td.textContent = val == null ? "—" : String(val); tr.appendChild(td); }); body.appendChild(tr); });
       }
-      renderSchedule(sched); setBanner(nx);
+      renderSchedule(sched); setBanner(nx); nextLicey = nx || null; applyStarter();
       if (data.roster && Array.isArray(data.roster.hitters)) rosterRows.hitters = data.roster.hitters;
       if (data.roster && Array.isArray(data.roster.pitchers)) rosterRows.pitchers = data.roster.pitchers;
       renderRoster();
@@ -221,6 +221,36 @@
       console.error("No se pudo actualizar la API de estadísticas:", err);
       apiStatus.textContent = "No se pudo consultar la API · pulsa Actualizar datos para reintentar";
     } finally { clearTimeout(slow); }
+  }
+  let nextLicey = null, rotationGames = [];
+  const rotationApi = (window.CHERCHA_CONFIG && window.CHERCHA_CONFIG.rotationApiUrl) || api.replace(/\/api\/stats$/, "/api/rotation");
+  const rdDay = d => new Date(d).toLocaleDateString("en-CA", {timeZone:"America/Santo_Domingo"});
+  function applyStarter() {
+    if (!nextLicey || !nextLicey.gameDate || !rotationGames.length) return;
+    const g = rotationGames.find(x => x.date === rdDay(nextLicey.gameDate)); if (!g) return;
+    $("nextStarter").textContent = g.pitcher || "Por anunciar";
+    $("starterNote").textContent = g.pitcher ? "Anunciado por el Licey (Licey.com)" : "El Licey aún no lo anuncia";
+  }
+  async function loadRotation() {
+    const box = $("rotationList"); if (!box || !rotationApi) return;
+    try {
+      let data; try { data = await getJson(rotationApi, 70000); } catch (e) { data = await getJson(rotationApi, 70000); }
+      const today = rdDay(Date.now());
+      rotationGames = (data.games || []).filter(g => g && g.date >= today);
+      box.replaceChildren();
+      const note = $("rotationNote"), art = data.article;
+      if (note && art && art.url && okLicey(art.url)) { note.replaceChildren(); const a = document.createElement("a"); a.href = art.url; a.target = "_blank"; a.rel = "noopener noreferrer"; a.textContent = "Ver el anuncio completo en Licey.com ↗"; note.append("Publicada el " + new Date(art.publishedAt).toLocaleDateString("es-DO", {day:"numeric", month:"short", timeZone:"America/Santo_Domingo"}) + " · ", a); }
+      if (!rotationGames.length) { box.innerHTML = '<p class="empty-row">El Licey aún no ha publicado la próxima rotación.</p>'; return; }
+      rotationGames.forEach(g => {
+        const el = document.createElement("div"); el.className = "rot-item" + (g.date === today ? " is-today" : "");
+        const day = document.createElement("span"); day.className = "rot-day"; day.textContent = new Date(g.date + "T12:00:00Z").toLocaleDateString("es-DO", {weekday:"short", day:"numeric", month:"short", timeZone:"UTC"}) + (g.date === today ? " · HOY" : "");
+        const vs = document.createElement("span"); vs.className = "rot-vs"; vs.textContent = g.opponent ? "vs " + g.opponent : "Rival por confirmar";
+        const sm = document.createElement("small"); sm.textContent = [g.time, g.venue].filter(Boolean).join(" · "); vs.appendChild(sm);
+        const p = document.createElement("b"); p.className = "rot-pitcher"; p.textContent = g.pitcher || "Por anunciar";
+        el.append(day, vs, p); box.appendChild(el);
+      });
+      applyStarter();
+    } catch (err) { console.error("Rotación:", err); box.innerHTML = '<p class="empty-row">No se pudo cargar la rotación. <a href="https://www.licey.com/noticias/" target="_blank" rel="noopener noreferrer">Ver en Licey.com ↗</a></p>'; }
   }
   const newsApi = (window.CHERCHA_CONFIG && window.CHERCHA_CONFIG.newsApiUrl) || api.replace(/\/api\/stats$/, "/api/news");
   const okLicey = u => { try { const x = new URL(u); return x.protocol === "https:" && /(^|\.)licey\.com$/.test(x.hostname); } catch { return false; } };
@@ -244,8 +274,8 @@
     } catch (err) { console.error("Noticias:", err); grid.innerHTML = '<p class="empty-row">No se pudieron cargar las noticias. <a href="https://www.licey.com/noticias/" target="_blank" rel="noopener noreferrer">Ver en Licey.com ↗</a></p>'; }
   }
   $("refreshData").addEventListener("click", refreshStats);
-  $("refreshData").addEventListener("click", loadNews);
-  loadNews();
+  $("refreshData").addEventListener("click", () => { loadNews(); loadRotation(); });
+  loadNews(); loadRotation();
   refreshStats();
 
   // Community demo data is local to this browser. A shared production community needs backend + moderation.
