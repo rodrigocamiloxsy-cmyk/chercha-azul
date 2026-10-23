@@ -1,0 +1,9 @@
+{
+  "name": "chercha-azul-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Backend de Chercha Azul para consultar estadísticas de LIDOM mediante MLB Stats API",
+  "main": "server.js",
+  "scripts": {"start": "node server.js"},
+  "engines": {"node": ">=20"}
+}
