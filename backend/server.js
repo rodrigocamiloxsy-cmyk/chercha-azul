@@ -12,6 +12,9 @@ let cachedAt = 0;
 
 const TEAM_NAMES = {
   'tigres del licey': 'Tigres del Licey',
+  'tigres': 'Tigres del Licey',
+  'licey': 'Tigres del Licey',
+  'aguilas cibaenas': 'Águilas Cibaeñas',
   'toros': 'Toros del Este',
   'toros del este': 'Toros del Este',
   'aguilas': 'Águilas Cibaeñas',
@@ -25,6 +28,9 @@ const TEAM_NAMES = {
   'estrellas': 'Estrellas Orientales',
   'estrellas orientales': 'Estrellas Orientales'
 };
+
+const STATUS_ES = { 'Scheduled':'Programado','Final':'Final','Postponed':'Pospuesto','In Progress':'En juego','Live':'En juego','Suspended':'Suspendido','Cancelled':'Cancelado','Pre-Game':'Por comenzar','Warmup':'Por comenzar' };
+const esStatus = s => STATUS_ES[s] || s;
 
 function canonicalTeam(name = '') {
   const key = String(name).trim().toLocaleLowerCase('es');
@@ -79,7 +85,7 @@ function statsRows(data, teamFilter, group) {
 }
 
 async function buildStats() {
-  const seasonQuery = `season=${encodeURIComponent(SEASON)}&sportIds=${LIDOM_SPORT_ID}&playerPool=ALL`;
+  const seasonQuery = `season=${encodeURIComponent(SEASON)}&sportIds=${LIDOM_SPORT_ID}&playerPool=ALL&limit=2000`;
   const [standingsData, scheduleData, hittingData, pitchingData] = await Promise.all([
     getJson(`/standings?leagueId=${LIDOM_LEAGUE_ID}&season=${SEASON}&standingsTypes=regularSeason`),
     getJson(`/schedule?sportId=${LIDOM_SPORT_ID}&leagueId=${LIDOM_LEAGUE_ID}&season=${SEASON}&gameTypes=R`),
@@ -98,7 +104,7 @@ async function buildStats() {
 
   const games = (scheduleData.dates || []).flatMap(d => (d.games || []).map(g => ({
     date: d.date,
-    dateLabel: new Date(`${d.date}T12:00:00`).toLocaleDateString('es-DO', { day: 'numeric', month: 'short', year: 'numeric' }),
+    dateLabel: new Date(`${d.date}T12:00:00Z`).toLocaleDateString('es-DO', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }),
     home: canonicalTeam(g.teams?.home?.team?.name || ''),
     away: canonicalTeam(g.teams?.away?.team?.name || ''),
     status: g.status?.detailedState || g.status?.abstractGameState || 'Por confirmar',
@@ -106,9 +112,10 @@ async function buildStats() {
     awayScore: g.teams?.away?.score ?? null,
     gameDate: g.gameDate || null
   })));
-  const today = new Date().toISOString().slice(0, 10);
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Santo_Domingo' });
+  const nowMs = Date.now();
   const liceyGames = games.filter(g => /Tigres del Licey/i.test(g.home) || /Tigres del Licey/i.test(g.away));
-  const nextGame = liceyGames.filter(g => g.date >= today && !/final|completed/i.test(g.status)).sort((a,b) => a.date.localeCompare(b.date))[0];
+  const nextGame = liceyGames.filter(g => !/final|completed|postponed/i.test(g.status) && (!g.gameDate || new Date(g.gameDate).getTime() > nowMs - 4*3600e3)).sort((a,b) => String(a.gameDate||a.date).localeCompare(String(b.gameDate||b.date)))[0];
   const lastGame = liceyGames.filter(g => /final|completed/i.test(g.status)).sort((a,b) => b.date.localeCompare(a.date))[0];
   const liceyRecord = allTeams.find(t => /Tigres del Licey/i.test(t.team));
 
@@ -118,7 +125,7 @@ async function buildStats() {
     updatedAt: new Date().toISOString(),
     note: 'Fuente no oficial de LIDOM. Contrasta los datos con la liga; los campos no disponibles se muestran como —.',
     record: liceyRecord ? { wins: liceyRecord.wins, losses: liceyRecord.losses } : null,
-    nextGame: nextGame ? { home: nextGame.home, away: nextGame.away, dateLabel: `${nextGame.dateLabel} · ${nextGame.status}` } : null,
+    nextGame: nextGame ? { home: nextGame.home, away: nextGame.away, dateLabel: `${nextGame.dateLabel} · ${esStatus(nextGame.status)}` } : null,
     lastResult: lastGame ? { score: `${lastGame.away} ${lastGame.awayScore ?? '—'} - ${lastGame.homeScore ?? '—'} ${lastGame.home}` } : null,
     standings: allTeams,
     roster: {
@@ -152,6 +159,7 @@ const server = http.createServer(async (req, res) => {
     return res.end(JSON.stringify(data));
   } catch (error) {
     console.error(error);
+    if (cached) { res.writeHead(200, { 'X-Stale': '1' }); return res.end(JSON.stringify({ ...cached, stale: true })); }
     res.writeHead(502);
     return res.end(JSON.stringify({ error: 'No se pudieron consultar los datos de LIDOM', detail: error.message }));
   }
