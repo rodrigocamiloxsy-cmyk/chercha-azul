@@ -139,3 +139,11 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:#4b9bff!import
   .roster-tab-icon{width:70px;height:64px}
   .roster-tab-icon .sports-icon{width:62px;height:52px}
 }
+
+/* Calendario y tabla */
+.schedule-list{display:grid;gap:10px}
+.schedule-item{display:grid;grid-template-columns:150px 1fr auto;gap:12px;align-items:center;padding:14px 16px;border:1px solid rgba(120,160,255,.25);border-radius:14px;background:rgba(10,30,70,.35)}
+.schedule-item.is-final{opacity:.75}
+.sch-when{font-size:.85rem;opacity:.8;text-transform:capitalize}.sch-score{white-space:nowrap}
+tr.me td{background:rgba(40,110,255,.22);font-weight:700}
+@media(max-width:640px){.schedule-item{grid-template-columns:1fr auto}.sch-when{grid-column:1/-1}}

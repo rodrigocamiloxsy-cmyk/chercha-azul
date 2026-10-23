@@ -15,6 +15,7 @@
   const pages = [...document.querySelectorAll("[data-page]")];
   const navLinks = [...document.querySelectorAll("[data-view]")];
   function showPage(view, updateHash = true) {
+    view = ({equipo:"calendario",posiciones:"calendario",proximos:"calendario",estadisticas:"numeritos",noticias:"redes",comunidad:"chercha",whatsapp:"chercha"})[view] || view;
     const valid = ["inicio", "numeritos", "chercha", "calendario", "redes", "ruta", "historia"].includes(view) ? view : "inicio";
     pages.forEach(page => page.classList.toggle("page-hidden", page.dataset.page !== valid));
     nav.querySelectorAll("a[data-view]").forEach(a => a.classList.toggle("active", a.dataset.view === valid));
@@ -149,39 +150,61 @@
   // API adapter contract. Keep blank until a trustworthy source and credentials/schema are known.
   const api = (window.CHERCHA_CONFIG && window.CHERCHA_CONFIG.statsApiUrl) || "";
   const apiStatus = $("apiStatus");
+  const STATUS = {Scheduled:"Programado", Final:"Final", Postponed:"Pospuesto", "In Progress":"En juego", Live:"En juego", Suspended:"Suspendido", Cancelled:"Cancelado", "Pre-Game":"Por comenzar", Warmup:"Por comenzar"};
+  const isLicey = v => /licey|tigres/i.test(String(v || ""));
+  const dt = iso => { try { return new Date(iso).toLocaleString("es-DO",{timeZone:"America/Santo_Domingo",weekday:"short",day:"numeric",month:"short",hour:"numeric",minute:"2-digit"}); } catch { return ""; } };
+  function renderSchedule(schedule) {
+    const box = $("scheduleList"); if (!box) return;
+    const games = schedule.filter(g => isLicey(g.home) || isLicey(g.away));
+    const done = games.filter(g => g.status === "Final").slice(-3);
+    const next = games.filter(g => g.status !== "Final").slice(0, 12);
+    box.replaceChildren();
+    if (!games.length) { box.innerHTML = '<p class="empty-row">No hay partidos del Licey en la fuente.</p>'; return; }
+    [...done, ...next].forEach(g => {
+      const el = document.createElement("div"); el.className = "schedule-item" + (g.status === "Final" ? " is-final" : "");
+      const score = g.status === "Final" ? `${g.awayScore} - ${g.homeScore}` : (STATUS[g.status] || g.status || "—");
+      const when = document.createElement("span"); when.className = "sch-when"; when.textContent = dt(g.gameDate) || g.dateLabel || "";
+      const teams = document.createElement("span"); teams.className = "sch-teams"; teams.textContent = `${g.away} @ ${g.home}`;
+      const res = document.createElement("b"); res.className = "sch-score"; res.textContent = score;
+      el.append(when, teams, res); box.appendChild(el);
+    });
+  }
+  async function getJson(url, ms) {
+    const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), ms);
+    try { const r = await fetch(url, {headers:{"Accept":"application/json"}, signal: ctl.signal}); if (!r.ok) throw new Error("HTTP " + r.status); return await r.json(); }
+    finally { clearTimeout(t); }
+  }
   async function refreshStats() {
-    if (!api) {
-      apiStatus.textContent = "API no configurada · sin datos en vivo";
-      return;
-    }
+    if (!api) { apiStatus.textContent = "API no configurada · sin datos en vivo"; return; }
     apiStatus.textContent = "Consultando fuente…";
+    const slow = setTimeout(() => { apiStatus.textContent = "Despertando el servidor (Render gratis puede tardar ~1 min)…"; }, 5000);
     try {
-      const response = await fetch(api, {headers: {"Accept":"application/json"}});
-      if (!response.ok) throw new Error("HTTP " + response.status);
-      const data = await response.json();
-      // Expected generic JSON shape. Map your chosen provider's fields here after confirming its schema.
-      if (data.record) { $("teamRecord").innerHTML = `${escapeText(data.record.wins ?? "—")}-${escapeText(data.record.losses ?? "—")} <small>G-P</small>`; $("recordNote").textContent = "Récord recibido de la fuente conectada"; }
-      if (data.nextGame) { $("nextGame").innerHTML = `${escapeText(data.nextGame.home || "LICEY")} <small>VS</small> ${escapeText(data.nextGame.away || "—")}`; $("nextGameDate").textContent = clean(data.nextGame.dateLabel || "Horario por confirmar",100); }
+      let data;
+      try { data = await getJson(api, 70000); } catch (e) { apiStatus.textContent = "Reintentando…"; data = await getJson(api, 70000); }
+      const st = Array.isArray(data.standings) ? data.standings : [];
+      const me = st.find(t => isLicey(t.team));
+      const rec = data.record || (me ? {wins: me.wins, losses: me.losses} : null);
+      if (rec) { $("teamRecord").innerHTML = `${escapeText(rec.wins ?? "—")}-${escapeText(rec.losses ?? "—")} <small>G-P</small>`; $("recordNote").textContent = me && me.streak ? `Racha actual: ${me.streak}` : "Récord de la temporada"; }
+      const sched = Array.isArray(data.schedule) ? data.schedule : [];
+      const nx = sched.find(g => (isLicey(g.home) || isLicey(g.away)) && g.status !== "Final" && g.status !== "Postponed" && new Date(g.gameDate).getTime() > Date.now() - 4*3600e3);
+      const ng = nx ? {home: nx.home, away: nx.away, dateLabel: dt(nx.gameDate) + " (hora RD)"} : data.nextGame;
+      if (ng) { $("nextGame").innerHTML = `${escapeText(ng.away || "—")} <small>@</small> ${escapeText(ng.home || "LICEY")}`; $("nextGameDate").textContent = clean(ng.dateLabel || "Horario por confirmar",100).replace("Scheduled","Programado"); }
       if (data.starter) { $("nextStarter").textContent = clean(data.starter.name || "Por confirmar",80); $("starterNote").textContent = clean(data.starter.status || "Abridor reportado por la fuente",100); }
-      if (data.lastResult) { $("lastResult").textContent = `${clean(data.lastResult.score || "Resultado recibido",20)}`; }
-      if (Array.isArray(data.standings) && data.standings.length) {
-        const body = $("standingsBody");
-        body.replaceChildren();
-        data.standings.forEach(team => {
-          const tr = document.createElement("tr");
-          [team.team, team.wins, team.losses, team.pct, team.streak].forEach(val => { const td=document.createElement("td"); td.textContent = val == null ? "—" : String(val); tr.appendChild(td); });
-          body.appendChild(tr);
-        });
+      if (data.lastResult) { $("lastResult").textContent = clean(data.lastResult.score || "Resultado recibido",60); $("lastResultNote").textContent = "Último juego finalizado"; }
+      if (st.length) {
+        const body = $("standingsBody"); body.replaceChildren();
+        st.forEach(team => { const tr = document.createElement("tr"); if (isLicey(team.team)) tr.className = "me";
+          [team.team, team.wins, team.losses, team.pct, team.streak].forEach(val => { const td=document.createElement("td"); td.textContent = val == null ? "—" : String(val); tr.appendChild(td); }); body.appendChild(tr); });
       }
-      // Estadísticas individuales normalizadas por el backend de Chercha Azul.
+      renderSchedule(sched);
       if (data.roster && Array.isArray(data.roster.hitters)) rosterRows.hitters = data.roster.hitters;
       if (data.roster && Array.isArray(data.roster.pitchers)) rosterRows.pitchers = data.roster.pitchers;
       renderRoster();
       apiStatus.textContent = "Datos recibidos · " + (data.season || "temporada por confirmar") + " · " + timeLabel(data.updatedAt || Date.now());
     } catch (err) {
       console.error("No se pudo actualizar la API de estadísticas:", err);
-      apiStatus.textContent = "No se pudo consultar la API · revisa URL/CORS/formato";
-    }
+      apiStatus.textContent = "No se pudo consultar la API · pulsa Actualizar datos para reintentar";
+    } finally { clearTimeout(slow); }
   }
   $("refreshData").addEventListener("click", refreshStats);
   refreshStats();

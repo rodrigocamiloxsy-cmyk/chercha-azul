@@ -61,14 +61,14 @@
 
     <section class="wrap section" id="equipo" data-page="calendario">
       <div class="section-heading reveal"><div><div class="eyebrow">DATOS QUE HABLAN</div><h2>EL <em>EQUIPO</em></h2></div><p>Récord, próximo partido, abridor probable, último resultado y posiciones del Licey.</p></div>
-      <div class="notice"><span class="notice-icon">i</span><span>Los datos de ejemplo están identificados como demostración. Conecta una API fiable para publicar estadísticas reales y actualizadas.</span><span class="demo-tag">MODO DEMO</span></div>
+      <div class="notice"><span class="notice-icon">i</span><span>Datos de MLB Stats API filtrados para LIDOM. Es una fuente no oficial: contrasta con LIDOM.</span><span class="demo-tag">FUENTE NO OFICIAL</span></div>
       <div class="stats-grid">
         <article class="stat-card reveal"><div class="card-top"><span>RÉCORD DEL EQUIPO</span><span class="stat-icon">W/L</span></div><div class="stat-number" id="teamRecord">— <small>G-P</small></div><p id="recordNote">Esperando fuente de datos</p><div class="stat-bottom"><span class="tiny-line"></span><span>Temporada actual</span></div></article>
         <article class="stat-card reveal"><div class="card-top"><span>PRÓXIMO JUEGO</span><span class="stat-icon">↗</span></div><div class="stat-number stat-match" id="nextGame">LICEY <small>VS</small> —</div><p id="nextGameDate">Rival y horario por confirmar</p><div class="stat-bottom"><span class="status-dot"></span><span>Calendario</span></div></article>
         <article class="stat-card reveal"><div class="card-top"><span>ABRIDOR PROBABLE</span><span class="stat-icon">P</span></div><div class="stat-number stat-player" id="nextStarter">Por confirmar</div><p id="starterNote">No se ha conectado una fuente de rotaciones</p><div class="stat-bottom"><span class="tiny-line"></span><span>Rotación</span></div></article>
         <article class="stat-card reveal"><div class="card-top"><span>ÚLTIMO RESULTADO</span><span class="stat-icon">↻</span></div><div class="stat-number stat-player" id="lastResult">—</div><p id="lastResultNote">El marcador aparecerá al conectar datos</p><div class="stat-bottom"><span class="tiny-line"></span><span>Resultados</span></div></article>
       </div>
-      <div class="section-subhead"><div><h3>Tabla de posiciones</h3><p>Vista de ejemplo; se actualizará desde la fuente configurada.</p></div><span class="pill">LIDOM</span></div>
+      <div class="section-subhead"><div><h3>Tabla de posiciones</h3><p>Datos desde la fuente conectada.</p></div><span class="pill">LIDOM</span></div>
       <div class="table-card"><div class="table-scroll"><table><thead><tr><th>EQUIPO</th><th>G</th><th>P</th><th>PCT</th><th>RACHA</th></tr></thead><tbody id="standingsBody"><tr><td colspan="5" class="empty-row">Conecta una API de estadísticas para mostrar la tabla oficial.</td></tr></tbody></table></div></div>
       <div class="stats-footer"><span><i class="pulse-dot"></i> Fuente de datos</span><span id="apiStatus">API no configurada · sin datos en vivo</span><button class="text-button" id="refreshData">Actualizar datos ↻</button></div>
       <div class="team-actions"><a class="button button-outline" href="#proximos" data-view="calendario">Próximos partidos ↗</a><a class="button button-outline" href="#equipo" data-view="calendario">Posiciones ↑</a><a class="button button-blue" href="#estadisticas" data-view="numeritos">Estadísticas de jugadores ↗</a></div>
@@ -135,8 +135,8 @@
     </section>
 
     <section class="wrap section" id="proximos" data-page="calendario">
-      <div class="section-heading reveal"><div><div class="eyebrow">DENTRO DE EQUIPO</div><h2>PRÓXIMOS <em>PARTIDOS</em></h2></div><p>Partidos, horarios y resultados. Se mostrarán aquí al conectar una fuente oficial.</p></div>
-      <div class="calendar-placeholder reveal"><div class="calendar-symbol">▦</div><div><h3>La próxima entrada empieza aquí</h3><p>El calendario real todavía no está conectado. No mostraremos fechas ni abridores inventados.</p></div><span class="pill">PENDIENTE DE API</span></div>
+      <div class="section-heading reveal"><div><div class="eyebrow">DENTRO DE EQUIPO</div><h2>PRÓXIMOS <em>PARTIDOS</em></h2></div><p>Calendario del Licey con horarios (hora de Santo Domingo) y resultados.</p></div>
+      <div class="schedule-list" id="scheduleList"><p class="empty-row">Cargando calendario…</p></div>
     </section>
 
     <section class="wrap section social-page" id="redes" data-page="redes">
@@ -155,7 +155,7 @@
       </div>
     </section>
 
-    <section class="wrap whatsapp-section" id="whatsapp" data-page="whatsapp">
+    <section class="wrap whatsapp-section" id="whatsapp" data-page="chercha">
       <div class="whatsapp-icon">◉</div><div class="whatsapp-copy"><div class="eyebrow">LA CHERCHA SIGUE FUERA DE AQUÍ</div><h2>EL AZUL SE VIVE <em>EN GRUPO.</em></h2><p>Únete al WhatsApp de la fanaticada y comparte la pasión por el Licey.</p></div><a class="button button-whatsapp" id="whatsappLink" href="https://chat.whatsapp.com/HTqJZsSCxWyADUOQFgG9Iy?s=cl&amp;p=i&amp;mlu=4&amp;ilr=4&amp;iam=0" target="_blank" rel="noopener noreferrer">Unirme al grupo <span>↗</span></a><p class="whatsapp-note" id="whatsappNote">Grupo de WhatsApp de la comunidad Chercha Azul.</p>
     </section>
   </main>
