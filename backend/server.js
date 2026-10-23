@@ -169,6 +169,53 @@ async function buildNews() {
   return { source: 'Licey.com (sitio oficial del Club Atlético Licey)', updatedAt: new Date().toISOString(), items };
 }
 
+// ---- Rotación abridora (anuncio publicado en Licey.com) ----
+const ROT_MS = 15 * 60 * 1000;
+let rotCache = null, rotAt = 0;
+const WEEK = { domingo:0, lunes:1, martes:2, miercoles:3, jueves:4, viernes:5, sabado:6 };
+const noAccent = t => String(t).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+const xmlTag = (b, t) => (b.match(new RegExp(`<${t}[^>]*>([\\s\\S]*?)</${t}>`)) || [])[1] || '';
+const NM = "[A-ZÁÉÍÓÚÑ][\\wáéíóúñ'’\\-]+";
+const PITCHER_RE = new RegExp(`(?:subirá a la loma|le tocará el turno|lanzará|tomará la pelota|será el abridor|abrirá|será el encargado)[^.]*?\\b(?:diestro|zurdo|derecho|izquierdo|lanzador|pitcher)\\s+(${NM}(?:\\s+(?:(?:de|del|la|los)\\s+)?${NM}){0,3}(?:\\s+Jr\\.)?)`);
+function parseRotation(html, publishedIso) {
+  const paras = [...String(html).matchAll(/<p[^>]*>([\s\S]*?)<\/p>/gi)].map(m => plain(m[1]));
+  const base = new Date(new Date(publishedIso).getTime() - 4 * 3600e3); // hora de República Dominicana
+  const games = [];
+  for (const t of paras) {
+    const m = t.match(/^(?:Para\s+)?(?:el\s+|este\s+)(domingo|lunes|martes|mi[eé]rcoles|jueves|viernes|s[aá]bado)(?:\s+(\d{1,2}))?/i);
+    if (!m) continue;
+    const wd = WEEK[noAccent(m[1])], day = m[2] ? Number(m[2]) : null;
+    let date = null;
+    for (let i = 0; i < 21 && !date; i++) { const d = new Date(base.getTime() + i * 864e5); if (d.getUTCDay() === wd && (!day || d.getUTCDate() === day)) date = d.toISOString().slice(0, 10); }
+    const opp = t.match(/(?:frente a|ante|contra)\s+(?:los|las)\s+(?:visitantes\s+|locales\s+)?(.+?)\s+en\s+el\s+(?:estadio|parque)/i);
+    const ven = t.match(/en\s+el\s+((?:estadio|parque)\s+[^(]{3,70}?)\s*\(/i);
+    const time = t.match(/\((\d{1,2}:\d{2}\s*[ap]\.?\s?m\.?)\)/i);
+    const p = t.match(PITCHER_RE);
+    const tbd = /a\s+ser\s+anunciado|por\s+anunciar|sin\s+anunciar/i.test(t);
+    if (!date || !(p || tbd)) continue;
+    games.push({ date, opponent: opp ? canonicalTeam(opp[1].trim()) : null, venue: ven ? ven[1].charAt(0).toUpperCase() + ven[1].slice(1) : null, time: time ? time[1] : null, pitcher: p ? p[1].trim() : null });
+  }
+  return games;
+}
+async function rotationPost() {
+  try {
+    const posts = JSON.parse(await fetchText(`${NEWS_BASE}/wp-json/wp/v2/posts?search=rotaci%C3%B3n&per_page=5&_fields=title,link,date_gmt,content`));
+    const p = Array.isArray(posts) && posts.find(x => /rotaci/i.test(plain(x.title?.rendered)));
+    if (p) return { title: plain(p.title.rendered), url: officialUrl(p.link), date: p.date_gmt + 'Z', html: p.content?.rendered || '' };
+  } catch (e) { console.error('REST rotación falló, probando RSS:', e.message); }
+  const xml = await fetchText(`${NEWS_BASE}/?s=rotaci%C3%B3n&feed=rss2`);
+  for (const m of xml.matchAll(/<item>([\s\S]*?)<\/item>/g)) {
+    const title = plain(xmlTag(m[1], 'title'));
+    if (/rotaci/i.test(title)) return { title, url: officialUrl(plain(xmlTag(m[1], 'link'))), date: new Date(plain(xmlTag(m[1], 'pubDate'))).toISOString(), html: (xmlTag(m[1], 'content:encoded') || xmlTag(m[1], 'description')).replace(/<!\[CDATA\[|\]\]>/g, '') };
+  }
+  throw new Error('No se encontró un anuncio de rotación');
+}
+async function buildRotation() {
+  const post = await rotationPost();
+  return { source: 'Licey.com (sitio oficial del Club Atlético Licey)', updatedAt: new Date().toISOString(), article: { title: post.title, url: post.url, publishedAt: post.date }, games: parseRotation(post.html, post.date) };
+}
+module.exports = { parseRotation };
+
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   res.setHeader('Access-Control-Allow-Origin', process.env.ALLOWED_ORIGIN || '*');
@@ -189,8 +236,18 @@ const server = http.createServer(async (req, res) => {
       res.writeHead(502); return res.end(JSON.stringify({ error: 'No se pudieron consultar las noticias', detail: error.message }));
     }
   }
+  if (url.pathname === '/api/rotation') {
+    try {
+      if (!rotCache || Date.now() - rotAt >= ROT_MS) { rotCache = await buildRotation(); rotAt = Date.now(); }
+      res.writeHead(200, { 'Cache-Control': 'public, max-age=300' }); return res.end(JSON.stringify(rotCache));
+    } catch (error) {
+      console.error(error);
+      if (rotCache) { res.writeHead(200, { 'X-Stale': '1' }); return res.end(JSON.stringify({ ...rotCache, stale: true })); }
+      res.writeHead(502); return res.end(JSON.stringify({ error: 'No se pudo consultar la rotación', detail: error.message }));
+    }
+  }
   if (url.pathname !== '/api/stats' && url.pathname !== '/api/lidom') {
-    res.writeHead(404); return res.end(JSON.stringify({ error: 'Ruta no encontrada', available: ['/health', '/api/stats', '/api/news'] }));
+    res.writeHead(404); return res.end(JSON.stringify({ error: 'Ruta no encontrada', available: ['/health', '/api/stats', '/api/news', '/api/rotation'] }));
   }
   try {
     if (cached && Date.now() - cachedAt < CACHE_MS) {
