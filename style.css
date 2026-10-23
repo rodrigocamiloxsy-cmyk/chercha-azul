@@ -52,10 +52,90 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:#4b9bff!import
 .social-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:28px}
 .social-card{display:flex;align-items:center;gap:15px;min-height:92px;padding:18px;border:1px solid var(--line);border-radius:15px;background:linear-gradient(140deg,#102b50b8,#091d39b8);transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease,background .22s ease}
 .social-card:hover{transform:translateY(-4px) scale(1.015);border-color:#398fff;box-shadow:0 12px 28px #006dff20;background:#102f58}
-.social-symbol{display:grid;place-items:center;flex:0 0 46px;height:46px;border-radius:13px;background:#1677ff22;border:1px solid #368cff50;color:#a9d0ff;font:700 14px var(--display);letter-spacing:.04em}
+.social-symbol{display:grid;place-items:center;flex:0 0 64px;width:64px;height:64px;border-radius:15px;background:#07152b;border:1px solid #368cff50;color:#a9d0ff;overflow:hidden}
+.brand-icon{display:block;width:46px;height:46px;filter:drop-shadow(0 3px 7px #0005)}
+.social-instagram{background:#16152c}.social-x{background:#050505}.social-whatsapp{background:#08291d}.social-youtube{background:#2a0911}
+.roster-tab-icon{display:grid;place-items:center;flex:none;width:116px;height:78px;border-radius:13px;background:linear-gradient(145deg,#0d2a50,#071b37);color:#8fc1ff;border:1px solid #1677ff50}
+.sports-icon{display:block;width:90px;height:64px;filter:drop-shadow(0 5px 6px #0008)}
+.roster-tab-icon .sports-icon{width:92px;height:66px}
+
 .social-card>span:nth-child(2){display:grid;gap:5px;flex:1}.social-card b{font-size:14px}.social-card small{color:var(--muted);font-size:11px}.social-arrow{color:var(--blue2);font-size:20px;transition:transform .2s}.social-card:hover .social-arrow{transform:translate(3px,-3px)}
 .social-note{margin-top:16px;color:var(--muted);font-size:12px}
 @media(max-width:700px){.social-grid{grid-template-columns:1fr}.social-card{min-height:82px}}
 
 /* Apartado Ruta: tarjetas de acceso a los seis equipos de LIDOM */
 .route-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:28px}.route-card{display:flex;align-items:center;gap:14px;min-height:112px;padding:19px;background:linear-gradient(135deg,#102e56,#0a2040);border:1px solid var(--line);border-radius:15px;position:relative;overflow:hidden;transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease}.route-card:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 0 0,#2587ff22,transparent 62%);opacity:.7;pointer-events:none}.route-card:hover,.route-card:focus-visible{transform:translateY(-5px) scale(1.015);border-color:#4b9bff88;box-shadow:0 16px 32px #0003;outline:none}.route-team-mark{position:relative;display:grid;place-items:center;flex:0 0 54px;height:54px;border-radius:14px;background:linear-gradient(145deg,#197cff,#0b3977);border:1px solid #ffffff22;color:white;font:700 20px var(--display);letter-spacing:.02em;box-shadow:0 8px 20px #006dff22}.route-card-copy{position:relative;display:flex;flex-direction:column;gap:3px;min-width:0}.route-card-copy small{font-size:9px;letter-spacing:.14em;color:#8ebdff;font-weight:700}.route-card-copy b{font-size:15px;line-height:1.3}.route-card-copy em{font-style:normal;color:#91bfff;font-size:11px;margin-top:4px}.route-arrow{position:relative;margin-left:auto;align-self:flex-start;color:#8ebdff;font-size:18px;transition:transform .2s}.route-card:hover .route-arrow{transform:translate(3px,-3px)}.route-disclaimer{font-size:11px;color:var(--muted);margin-top:18px}.creator-heading{margin-top:38px}@media(max-width:850px){.route-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.main-nav{gap:16px}}@media(max-width:700px){.route-grid{grid-template-columns:1fr}.route-card{min-height:96px}.main-nav{gap:18px}}
+
+/* Renovación CherchaAzull: héroe fotográfico responsive */
+.hero { position: relative; isolation: isolate; }
+.hero-art { overflow: hidden; background: #06152c; }
+.hero-art::before { content: ""; position:absolute; inset:0; z-index:1; background:linear-gradient(90deg,rgba(4,13,29,.1),rgba(4,13,29,.02) 45%,rgba(4,13,29,.55)); pointer-events:none; }
+.hero-player-photo { position:absolute; inset:0; background-image:linear-gradient(180deg,rgba(5,16,36,.02) 35%,rgba(5,16,36,.56) 100%),url("assets/images/licey-jugador.jpeg"); background-size:cover; background-position:center 28%; transform:scale(1.015); }
+.hero-art .hero-stamp, .hero-art .art-caption { z-index:2; }
+.hero-art .hero-stamp { background:rgba(5,17,38,.62); backdrop-filter:blur(8px); border:1px solid rgba(120,177,255,.25); }
+.hero h1 { letter-spacing:-.035em; }
+.button-blue { box-shadow:0 10px 32px rgba(24,100,255,.22); }
+.topbar { backdrop-filter:blur(18px); }
+.main-nav a { transition:color .2s ease,background .2s ease; }
+.main-nav a.active { color:#fff; }
+@media (min-width:900px) {
+ .hero { min-height:610px; align-items:center; }
+ .hero-copy { position:relative; z-index:3; }
+ .hero-art { position:absolute; right:0; top:0; bottom:0; width:59%; opacity:1; }
+ .hero-player-photo { background-position:center 24%; }
+ .hero-art::after { content:""; position:absolute; inset:0; z-index:1; background:linear-gradient(90deg,#071a35 0%,rgba(7,26,53,.82) 8%,rgba(7,26,53,.18) 47%,rgba(7,26,53,.05) 100%); }
+}
+@media (max-width:899px) {
+ .hero { display:flex; flex-direction:column; }
+ .hero-art { width:100%; min-height:390px; order:-1; margin-bottom:1.5rem; }
+ .hero-player-photo { background-position:center 23%; }
+ .hero-art::after { content:""; position:absolute; inset:0; background:linear-gradient(180deg,rgba(7,26,53,0) 45%,#071a35 100%); z-index:1; }
+ .hero-art .hero-stamp { top:1rem; right:1rem; }
+ .hero-art .art-caption { bottom:1rem; }
+ .hero h1 { font-size:clamp(2.8rem,12vw,5rem); }
+ .hero-actions { flex-wrap:wrap; }
+ .top-cta { display:none; }
+}
+@media (max-width:480px) {
+ .hero-art { min-height:310px; }
+ .hero-foot { flex-wrap:wrap; }
+ .hero-actions .button { width:100%; justify-content:center; }
+}
+
+
+/* Ajustes de navegación con iconos y accesos rápidos inspirados en la referencia */
+.main-nav a{display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.main-nav a svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.main-nav a:first-child svg{fill:currentColor;stroke:currentColor}
+.main-nav a.active{color:#fff}
+.home-shortcuts{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin:10px auto 42px}
+.shortcut-card{display:flex;align-items:center;gap:13px;min-height:86px;padding:17px 18px;border:1px solid rgba(89,145,255,.2);border-radius:17px;background:linear-gradient(135deg,rgba(11,31,68,.95),rgba(5,15,35,.95));box-shadow:0 12px 30px rgba(0,0,0,.15);transition:transform .2s,border-color .2s}
+.shortcut-card:hover{transform:translateY(-3px);border-color:rgba(44,119,255,.65)}
+.shortcut-icon{font-size:26px;line-height:1;color:#2868ff;min-width:28px;text-align:center}
+.shortcut-card span:nth-child(2){display:flex;flex-direction:column;gap:3px;min-width:0}
+.shortcut-card b{font:600 12px var(--display);letter-spacing:.04em}
+.shortcut-card small{font-size:11px;color:var(--muted)}
+.shortcut-card i{margin-left:auto;color:#4387ff;font-size:25px;font-style:normal}
+@media(max-width:900px){.main-nav{gap:12px}.main-nav a{gap:5px}.main-nav a svg{width:15px;height:15px}.home-shortcuts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.main-nav a{flex-direction:column;gap:3px;font-size:10px}.main-nav a svg{width:18px;height:18px}.home-shortcuts{gap:9px;margin-top:8px}.shortcut-card{padding:12px 10px;gap:8px;min-height:76px}.shortcut-card b{font-size:10px}.shortcut-card small{font-size:10px}.shortcut-icon{font-size:21px;min-width:22px}}
+
+/* Equipo: accesos a subapartados */
+.team-actions{display:flex;flex-wrap:wrap;gap:12px;margin:22px 0 8px}.team-actions .button{display:inline-flex;align-items:center;justify-content:center}
+@media(max-width:640px){.team-actions{display:grid;grid-template-columns:1fr}.team-actions .button{width:100%}}
+
+/* Historia interactiva: mapa de las 24 coronas */
+.history-banner{display:grid;grid-template-columns:76px 1fr auto;align-items:center;gap:22px;padding:26px 30px;margin:26px 0 24px;border:1px solid #3d73b4;border-radius:20px;background:radial-gradient(circle at 12% 50%,#1268cf55,transparent 36%),linear-gradient(115deg,#0d2a50,#07162d 72%);box-shadow:0 18px 45px #0002}.history-crown{display:grid;place-items:center;width:70px;height:70px;border-radius:20px;background:linear-gradient(145deg,#1686ff,#103c80);font-size:44px;color:#fff;box-shadow:0 8px 28px #087aff33}.history-banner h3{font:700 clamp(20px,3vw,30px) var(--display);letter-spacing:.035em;margin:9px 0 5px}.history-banner p{margin:0;color:var(--muted);font-size:13px}.history-total{display:flex;flex-direction:column;align-items:center;padding-left:24px;border-left:1px solid var(--line)}.history-total strong{font:700 58px var(--display);line-height:1;color:var(--blue2)}.history-total span{font-size:9px;letter-spacing:.14em;color:var(--muted);font-weight:800}.history-layout{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(320px,.95fr);gap:20px;align-items:start}.history-map-panel,.history-detail{border:1px solid var(--line);border-radius:18px;padding:22px;background:linear-gradient(145deg,#0c2547d9,#081a32e8);min-width:0}.history-map{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:18px}.history-marker{min-width:0;min-height:94px;padding:10px 5px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px;border:1px solid #24466f;border-radius:12px;background:linear-gradient(155deg,#123762,#0a1d38);color:#eaf3ff;cursor:pointer;transition:transform .18s,border-color .18s,background .18s,box-shadow .18s}.history-marker:hover,.history-marker:focus-visible{transform:translateY(-3px);border-color:#4ba3ff;outline:none}.history-marker.selected{border-color:#168dff;background:linear-gradient(150deg,#176bd0,#10366c);box-shadow:0 0 0 2px #168dff22,0 10px 22px #006dff22}.history-marker-crown{font-size:16px;color:#8cc5ff;line-height:1}.history-marker strong{font:700 15px var(--display);text-align:center}.history-marker small{font-size:8px;letter-spacing:.07em;color:#9bb8db}.history-help{font-size:11px;line-height:1.6;color:var(--muted);margin:16px 0 0}.history-detail{position:sticky;top:100px;background:radial-gradient(circle at 100% 0,#1475d722,transparent 42%),linear-gradient(145deg,#102b50,#08172c)}.history-detail-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}.history-detail-icon{display:grid;place-items:center;width:44px;height:44px;border-radius:13px;background:#146bd033;color:#70b6ff;font-size:28px}.history-detail h3{font:700 clamp(38px,5vw,58px) var(--display);margin:5px 0 8px;color:#fff}.history-detail-lead{font-size:14px;line-height:1.7;color:#c1d4ed}.history-facts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0}.history-facts>div{border:1px solid #ffffff12;border-radius:11px;background:#ffffff05;padding:12px;min-width:0}.history-facts span{display:block;font-size:9px;letter-spacing:.08em;font-weight:800;color:#7eb8ff;margin-bottom:6px}.history-facts strong{font-size:12px;line-height:1.45;overflow-wrap:anywhere}.history-source{display:inline-flex;margin-top:4px;color:#7fc1ff;font-size:12px;font-weight:700}.history-note{margin-top:20px;padding:15px 17px;border-left:3px solid #2d91ff;background:#0d2746;border-radius:0 10px 10px 0;color:#afc6e5;font-size:12px;line-height:1.7}.history-note strong{color:#fff}.main-nav a svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle;margin-right:5px}.main-nav a span{vertical-align:middle}
+@media(max-width:900px){.history-layout{grid-template-columns:1fr}.history-detail{position:static}.history-banner{grid-template-columns:60px 1fr auto;padding:22px}.history-crown{width:58px;height:58px;font-size:36px}}
+@media(max-width:600px){.history-banner{grid-template-columns:48px 1fr;gap:14px;padding:18px}.history-crown{width:48px;height:48px;border-radius:14px;font-size:30px}.history-total{grid-column:1/-1;align-items:flex-start;border-left:0;border-top:1px solid var(--line);padding:12px 0 0;flex-direction:row;gap:10px}.history-total strong{font-size:38px}.history-total span{align-self:center}.history-map-panel,.history-detail{padding:16px}.history-map{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.history-marker{min-height:82px}.history-marker strong{font-size:13px}.history-facts{grid-template-columns:1fr 1fr}.history-facts>div{padding:10px}.history-facts strong{font-size:11px}.main-nav{max-height:calc(100vh - 74px);overflow:auto}}
+
+/* Logos de marca y arte deportivo en las tarjetas */
+.social-card .social-symbol{flex:0 0 64px}
+.social-card .social-symbol .brand-icon{width:52px;height:52px}
+.roster-tabs{align-items:stretch}
+.roster-tab{gap:15px}
+@media(max-width:700px){
+  .social-symbol{flex-basis:54px;width:54px;height:54px}
+  .social-card .social-symbol .brand-icon{width:44px;height:44px}
+  .roster-tab-icon{width:70px;height:64px}
+  .roster-tab-icon .sports-icon{width:62px;height:52px}
+}

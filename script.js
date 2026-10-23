@@ -15,7 +15,7 @@
   const pages = [...document.querySelectorAll("[data-page]")];
   const navLinks = [...document.querySelectorAll("[data-view]")];
   function showPage(view, updateHash = true) {
-    const valid = ["inicio", "numeritos", "chercha", "calendario", "redes", "ruta"].includes(view) ? view : "inicio";
+    const valid = ["inicio", "numeritos", "chercha", "calendario", "redes", "ruta", "historia"].includes(view) ? view : "inicio";
     pages.forEach(page => page.classList.toggle("page-hidden", page.dataset.page !== valid));
     nav.querySelectorAll("a[data-view]").forEach(a => a.classList.toggle("active", a.dataset.view === valid));
     nav.classList.remove("open"); menu.setAttribute("aria-expanded", "false"); menu.textContent = "☰";
@@ -31,6 +31,47 @@
   }));
   window.addEventListener("hashchange", () => showPage(location.hash.slice(1), false));
   showPage(location.hash.slice(1) || "inicio", false);
+
+
+  // Historia interactiva: 24 campeonatos nacionales del Licey, en orden cronológico.
+  const championships = [
+    {year:"1951", rival:"Leones del Escogido", result:"4–1", manager:"Manuel Henríquez", mvp:"Alonzo Perry", story:"El campeonato inaugural del Licey en la etapa moderna de la liga dominicana. Los Tigres se impusieron al Escogido en la Serie Final.", source:"https://hoy.com.do/deportes/paseo-por-las-24-coronas-del-licey_987295.html"},
+    {year:"1953", rival:"Águilas Cibaeñas", result:"4–1", manager:"Óscar Rodríguez", mvp:"Guayubín Olivo", story:"La segunda corona azul llegó ante las Águilas. Guayubín Olivo fue reconocido como Jugador Más Valioso de la Serie Final.", source:"https://ensegundos.do/2024/01/30/asi-gano-el-licey-sus-24-coronas-de-campeones/"},
+    {year:"1958–59", rival:"Leones del Escogido", result:"5–4", manager:"Joe Schultz", mvp:"Pete Burnside", story:"Una final reñida que terminó con el Licey levantando su tercera corona. Pete Burnside fue el MVP de la Serie Final.", source:"https://hoy.com.do/deportes/paseo-por-las-24-coronas-del-licey_987295.html"},
+    {year:"1963–64", rival:"Águilas Cibaeñas", result:"4–3", manager:"Vernon Benson", mvp:"Dato por verificar", story:"Una de las finales más recordadas por la remontada azul: el Licey regresó después de estar abajo 0–3 en la serie semifinal frente al Escogido y luego conquistó el título ante las Águilas.", source:"https://hoy.com.do/deportes/paseo-por-las-24-coronas-del-licey_987295.html"},
+    {year:"1969–70", rival:"Dato por verificar", result:"Dato por verificar", manager:"Dato por verificar", mvp:"Dato por verificar", story:"El Licey sumó una nueva corona en la temporada 1969–70. Los detalles de la serie y sus protagonistas quedan pendientes de confirmar en una fuente histórica específica.", source:"https://www.licey.com/campeonatos-club-atletico-licey/"},
+    {year:"1970–71", rival:"Dato por verificar", result:"Dato por verificar", manager:"Dato por verificar", mvp:"Dato por verificar", story:"Segundo campeonato consecutivo en las temporadas 1969–70 y 1970–71. Los detalles individuales de esta final se marcarán como pendientes hasta verificarlos.", source:"https://www.licey.com/campeonatos-club-atletico-licey/"},
+    {year:"1972–73", rival:"Estrellas Orientales", result:"5–2", manager:"Tom Lasorda", mvp:"Teodoro Martínez", story:"El Licey venció a las Estrellas Orientales para conquistar su séptima corona. Tom Lasorda fue el dirigente y Teodoro Martínez recibió el reconocimiento de MVP.", source:"https://hoy.com.do/deportes/paseo-por-las-24-coronas-del-licey_987295.html"},
+    {year:"1973–74", rival:"Águilas Cibaeñas", result:"5–2", manager:"Tom Lasorda", mvp:"Greg Shanahan", story:"Los Tigres repitieron el campeonato en temporadas consecutivas, esta vez ante las Águilas. Greg Shanahan fue elegido MVP de la Serie Final.", source:"https://hoy.com.do/deportes/paseo-por-las-24-coronas-del-licey_987295.html"},
+    {year:"1976–77", rival:"Águilas Cibaeñas", result:"5–2", manager:"Buck Rodgers", mvp:"Manuel Mota", story:"El Licey derrotó a las Águilas para lograr su novena corona. Manuel Mota fue nombrado Jugador Más Valioso.", source:"https://hoy.com.do/deportes/paseo-por-las-24-coronas-del-licey_987295.html"},
+    {year:"1979–80", rival:"Estrellas Orientales", result:"5–1", manager:"Del Crandall", mvp:"Mickey Hatcher", story:"Los azules superaron a las Estrellas en la final. Mickey Hatcher recibió el premio al jugador más valioso.", source:"https://hoy.com.do/deportes/paseo-por-las-24-coronas-del-licey_987295.html"},
+    {year:"1982–83", rival:"Dato por verificar", result:"Dato por verificar", manager:"Dato por verificar", mvp:"Dato por verificar", story:"Comenzó una racha histórica de tres campeonatos consecutivos para el Licey, junto con las temporadas 1983–84 y 1984–85.", source:"https://www.licey.com/wp-content/uploads/2025/01/Guia-de-Medios-Licey-2024-2025.pdf"},
+    {year:"1983–84", rival:"Dato por verificar", result:"Dato por verificar", manager:"Dato por verificar", mvp:"Dato por verificar", story:"Segunda corona consecutiva de la racha de tres títulos azules entre 1982–83 y 1984–85. Los datos específicos de la final quedan pendientes de verificación.", source:"https://www.licey.com/wp-content/uploads/2025/01/Guia-de-Medios-Licey-2024-2025.pdf"},
+    {year:"1984–85", rival:"Dato por verificar", result:"Dato por verificar", manager:"Dato por verificar", mvp:"Dato por verificar", story:"El tercer campeonato consecutivo completó una de las rachas más destacadas del Licey en LIDOM.", source:"https://www.licey.com/wp-content/uploads/2025/01/Guia-de-Medios-Licey-2024-2025.pdf"},
+    {year:"1990–91", rival:"Leones del Escogido", result:"4–1", manager:"John Roseboro", mvp:"Henry Rodríguez", story:"El Licey volvió a coronarse al vencer al Escogido. Henry Rodríguez fue el Jugador Más Valioso de la Serie Final.", source:"https://hoy.com.do/deportes/paseo-por-las-24-coronas-del-licey_987295.html"},
+    {year:"1993–94", rival:"Águilas Cibaeñas", result:"4–1", manager:"Casey Parsons", mvp:"Silvestre Campusano", story:"Los Tigres vencieron a las Águilas en cinco partidos para conquistar su decimoquinta corona. Silvestre Campusano fue elegido MVP.", source:"https://hoy.com.do/deportes/paseo-por-las-24-coronas-del-licey_987295.html"},
+    {year:"1998–99", rival:"Leones del Escogido", result:"5–4", manager:"Dave Jauss", mvp:"Ronnie Belliard", story:"Una final decidida en nueve juegos ante el Escogido dio al Licey su corona número 16. Ronnie Belliard fue el MVP.", source:"https://hoy.com.do/deportes/paseo-por-las-24-coronas-del-licey_987295.html"},
+    {year:"2001–02", rival:"Águilas Cibaeñas", result:"4–3", manager:"Bob Geren", mvp:"D’Angelo Jiménez", story:"El Licey conquistó su corona número 17 al vencer a las Águilas en siete partidos. D’Angelo Jiménez fue reconocido como MVP.", source:"https://hoy.com.do/deportes/paseo-por-las-24-coronas-del-licey_987295.html"},
+    {year:"2003–04", rival:"Gigantes del Cibao", result:"4–1", manager:"Manny Acta", mvp:"Henry Rodríguez", story:"El equipo azul derrotó a los Gigantes y sumó su título número 18. Henry Rodríguez obtuvo su segundo reconocimiento de MVP de Serie Final.", source:"https://ensegundos.do/2024/01/30/asi-gano-el-licey-sus-24-coronas-de-campeones/"},
+    {year:"2005–06", rival:"Águilas Cibaeñas", result:"5–2", manager:"Rafael Landestoy", mvp:"Anderson Hernández y Erick Aybar", story:"Los Tigres se impusieron a las Águilas. El premio de jugador más valioso fue compartido por Anderson Hernández y Erick Aybar.", source:"https://ensegundos.do/2024/01/30/asi-gano-el-licey-sus-24-coronas-de-campeones/"},
+    {year:"2008–09", rival:"Gigantes del Cibao", result:"4–1", manager:"José Offerman", mvp:"Anderson Hernández", story:"El Licey barrió la serie final en cinco partidos para obtener su vigésimo campeonato. Anderson Hernández fue elegido MVP.", source:"https://ensegundos.do/2024/01/30/asi-gano-el-licey-sus-24-coronas-de-campeones/"},
+    {year:"2013–14", rival:"Leones del Escogido", result:"5–3", manager:"José Offerman", mvp:"Lew Ford", story:"Los azules derrotaron al Escogido y lograron la corona 21. Lew Ford fue el Jugador Más Valioso de la Serie Final.", source:"https://ensegundos.do/2024/01/30/asi-gano-el-licey-sus-24-coronas-de-campeones/"},
+    {year:"2016–17", rival:"Águilas Cibaeñas", result:"5–4", manager:"Audo Vicente", mvp:"Sergio Alcántara", story:"El Licey venció a las Águilas en una final de nueve partidos y alcanzó su corona número 22. Sergio Alcántara fue el MVP.", source:"https://ensegundos.do/2024/01/30/asi-gano-el-licey-sus-24-coronas-de-campeones/"},
+    {year:"2022–23", rival:"Estrellas Orientales", result:"4–1", manager:"José Offerman", mvp:"Jorge Alfaro", story:"Tras una espera de varias temporadas, el Licey conquistó su corona 23 al derrotar a las Estrellas en cinco partidos. Jorge Alfaro fue el MVP de la final.", source:"https://ensegundos.do/2024/01/30/asi-gano-el-licey-sus-24-coronas-de-campeones/"},
+    {year:"2023–24", rival:"Estrellas Orientales", result:"4–3", manager:"Gilbert Gómez", mvp:"Gustavo Núñez", story:"El Licey conquistó su corona nacional número 24 al vencer 3–2 a las Estrellas Orientales en el séptimo partido de la Serie Final, el 27 de enero de 2024, y logró el bicampeonato. Gustavo Núñez fue elegido MVP de la Serie Final: bateó .370 (10 hits en 27 turnos), anotó cuatro carreras e impulsó cinco.", source:"https://lidom.com/tigres-del-licey/gustavo-nunez-fue-seleccionado-el-jugador-mas-valioso-de-la-serie-final-41108.html"}
+  ];
+  const historyMap = $("historyMap"), historyDetail = $("historyDetail");
+  if (historyMap && historyDetail) {
+    const esc = escapeText;
+    historyMap.innerHTML = championships.map((c, i) => `<button class="history-marker${i === 0 ? " selected" : ""}" type="button" data-championship="${i}" aria-pressed="${i === 0 ? "true" : "false"}"><span class="history-marker-crown">♛</span><strong>${esc(c.year)}</strong><small>CORONA ${String(i+1).padStart(2,"0")}</small></button>`).join("");
+    const renderChampionship = (index) => {
+      const c = championships[index];
+      historyMap.querySelectorAll(".history-marker").forEach((b) => { const selected = Number(b.dataset.championship) === index; b.classList.toggle("selected", selected); b.setAttribute("aria-pressed", String(selected)); });
+      historyDetail.innerHTML = `<div class="history-detail-top"><span class="pill">CORONA #${index+1}</span><span class="history-detail-icon">♛</span></div><div class="eyebrow">CAMPEONATO NACIONAL LIDOM</div><h3>${esc(c.year)}</h3><p class="history-detail-lead">${esc(c.story)}</p><div class="history-facts"><div><span>RIVAL</span><strong>${esc(c.rival)}</strong></div><div><span>RESULTADO DE LA FINAL</span><strong>${esc(c.result)}</strong></div><div><span>MÁNAGER</span><strong>${esc(c.manager)}</strong></div><div><span>MVP DE LA SERIE FINAL</span><strong>${esc(c.mvp)}</strong></div></div><a class="history-source" href="${esc(c.source)}" target="_blank" rel="noopener noreferrer">Consultar fuente histórica ↗</a>`;
+    };
+    historyMap.addEventListener("click", (event) => { const button = event.target.closest("[data-championship]"); if (button) renderChampionship(Number(button.dataset.championship)); });
+    renderChampionship(0);
+  }
 
   // Smooth reveal animation
   const revealEls = document.querySelectorAll(".reveal");

@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#071a35">
-  <meta name="description" content="Chercha Azul: comunidad de fanáticos de los Tigres del Licey.">
-  <title>Chercha Azul | La comunidad azul</title>
+  <meta name="description" content="CherchaAzull: comunidad de fanáticos de los Tigres del Licey.">
+  <title>CherchaAzull | La comunidad azul</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
@@ -19,9 +19,15 @@
       <span class="brand-word">CHERCHA <b>AZUL</b><small>LA COMUNIDAD AZUL</small></span>
     </a>
     <nav class="main-nav" aria-label="Navegación principal">
-      <a class="active" href="#inicio" data-view="inicio">Inicio</a><a href="#numeritos" data-view="numeritos">Numeritos</a><a href="#chercha" data-view="chercha">La chercha</a><a href="#calendario" data-view="calendario">Calendario</a><a href="#ruta" data-view="ruta">Ruta</a>
+      <a class="active" href="#inicio" data-view="inicio"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><span>Inicio</span></a>
+      <a href="#noticias" data-view="redes"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h8M8 11h8M8 15h5"/></svg><span>Noticias</span></a>
+      <a href="#estadisticas" data-view="numeritos"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V11h4v9M10 20V4h4v16M16 20v-7h4v7"/></svg><span>Estadísticas</span></a>
+      <a href="#equipo" data-view="calendario"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M15 15a5 5 0 0 1 6 5"/></svg><span>Equipo</span></a>
+      <a href="#comunidad" data-view="chercha"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v12h-9l-5 4v-4H4z"/></svg><span>Comunidad</span></a>
+      <a href="#ruta" data-view="ruta"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z"/><circle cx="12" cy="9" r="2.2"/></svg><span>Ruta</span></a>
+      <a href="#historia" data-view="historia"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.6 5.3 5.9.9-4.25 4.1 1 5.8L12 16.3l-5.25 2.8 1-5.8L3.5 9.2l5.9-.9Z"/><path d="M7 21h10"/></svg><span>Historia</span></a>
     </nav>
-    <a class="top-cta" href="#chercha" data-view="chercha">Únete a la chercha <span>↗</span></a>
+    <a class="top-cta" href="#chercha" data-view="chercha">Sé parte de la comunidad <span>↗</span></a>
     <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú" aria-expanded="false">☰</button>
   </header>
 
@@ -29,24 +35,32 @@
     <section class="hero wrap" data-page="inicio">
       <div class="hero-copy reveal">
         <div class="eyebrow"><span class="eyebrow-dot"></span> FANÁTICA TIGRES DEL LICEY · REPÚBLICA DOMINICANA</div>
-        <h1>EL AZUL<br><em>SE LLEVA</em><br>EN LA SANGRE.</h1>
-        <p>Estadísticas, debate y pasión por los Tigres del Licey. La casa digital para vivir cada entrada con la fanaticada azul.</p>
-        <div class="hero-actions"><a class="button button-blue" href="#numeritos" data-view="numeritos">Explorar numeritos <span>↘</span></a><a class="button button-outline" href="#chercha" data-view="chercha">Entrar a la chercha</a><a class="button button-outline" href="#redes" data-view="redes">Síguenos en las redes <span>↗</span></a></div>
+        <h1>LA SANGRE AZUL<br><em>SE LLEVA EN</em><br>EL CUERPO.</h1>
+        <p>Más que un equipo, una tradición. Banda Azul, siempre con el Licey. Noticias, estadísticas y una comunidad hecha para la fanaticada azul.</p>
+        <div class="hero-actions"><a class="button button-blue" href="#equipo" data-view="calendario">Explorar el equipo <span>↘</span></a><a class="button button-outline" href="#chercha" data-view="chercha">Entrar a la comunidad</a><a class="button button-outline" href="#redes" data-view="redes">Síguenos en las redes <span>↗</span></a></div>
         <div class="hero-foot"><span class="mini-avatars"><i>AZ</i><i>TL</i><i>RD</i></span><span>Una comunidad hecha por fanáticos, para fanáticos.</span></div>
       </div>
       <div class="hero-art reveal">
         <div class="art-glow"></div>
         <div class="stadium-lines"></div>
         <div class="hero-stamp">ORGULLO<br><b>AZUL</b><span>DESDE SIEMPRE</span></div>
-        <div class="hero-ball"><svg viewBox="0 0 240 240" aria-label="Ilustración de pelota de béisbol"><defs><linearGradient id="ballshade" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#b7d7ff"/></linearGradient></defs><circle cx="120" cy="120" r="103" fill="url(#ballshade)" stroke="#d9eaff" stroke-width="2"/><path d="M53 30C103 68 103 172 53 210M187 30C137 68 137 172 187 210" fill="none" stroke="#df4355" stroke-width="4"/><g stroke="#df4355" stroke-width="2.5"><path d="m65 42 12 1m-5 11 12 1m-6 12 12 1m-7 12 12 1m-7 12 12 1m-7 12 12 1m-7 12 12 1m-7 12 12 1m-7 12 12 1m-7 12 12 1m-7 12 12 1m-7 12 12 1M175 42l-12 1m5 11-12 1m6 12-12 1m7 12-12 1m7 12-12 1m7 12-12 1m7 12-12 1m7 12-12 1m7 12-12 1m7 12-12 1m7 12-12 1m7 12-12 1"/></g></svg></div>
+        <div class="hero-player-photo" role="img" aria-label="Jugador de los Tigres del Licey celebrando con su uniforme azul"></div>
         <div class="art-caption"><span>001</span><span>FANÁTICO POR CONVICCIÓN</span></div>
       </div>
     </section>
 
     <section class="ticker" data-page="inicio" aria-label="Aviso de datos"><div class="ticker-track"><span>LA CASA DEL FANÁTICO AZUL</span><i>✦</i><span>ESTADÍSTICAS · DEBATE · COMUNIDAD</span><i>✦</i><span>LA CASA DEL FANÁTICO AZUL</span><i>✦</i><span>ESTADÍSTICAS · DEBATE · COMUNIDAD</span></div></section>
 
-    <section class="wrap section" id="numeritos" data-page="numeritos">
-      <div class="section-heading reveal"><div><div class="eyebrow">DATOS QUE HABLAN</div><h2>LOS <em>NUMERITOS</em></h2></div><p>Todo lo que pasa en el terreno, organizado para el fanático que mira más allá del marcador.</p></div>
+    <section class="home-shortcuts wrap" data-page="inicio" aria-label="Accesos rápidos">
+      <a class="shortcut-card" href="#equipo" data-view="calendario"><span class="shortcut-icon">▦</span><span><b>PRÓXIMO PARTIDO</b><small>Calendario del Licey</small></span><i>›</i></a>
+      <a class="shortcut-card" href="#posiciones" data-view="calendario"><span class="shortcut-icon">▥</span><span><b>POSICIONES</b><small>Tabla de la temporada</small></span><i>›</i></a>
+      <a class="shortcut-card" href="#estadisticas" data-view="numeritos"><span class="shortcut-icon">▤</span><span><b>ESTADÍSTICAS</b><small>Bateadores y lanzadores</small></span><i>›</i></a>
+      <a class="shortcut-card" href="#noticias" data-view="redes"><span class="shortcut-icon">▣</span><span><b>NOTICIAS</b><small>Todo sobre el Licey</small></span><i>›</i></a>
+      <a class="shortcut-card" href="#historia" data-view="historia"><span class="shortcut-icon">♛</span><span><b>HISTORIA</b><small>Las 24 coronas del Licey</small></span><i>›</i></a>
+    </section>
+
+    <section class="wrap section" id="equipo" data-page="calendario">
+      <div class="section-heading reveal"><div><div class="eyebrow">DATOS QUE HABLAN</div><h2>EL <em>EQUIPO</em></h2></div><p>Récord, próximo partido, abridor probable, último resultado y posiciones del Licey.</p></div>
       <div class="notice"><span class="notice-icon">i</span><span>Los datos de ejemplo están identificados como demostración. Conecta una API fiable para publicar estadísticas reales y actualizadas.</span><span class="demo-tag">MODO DEMO</span></div>
       <div class="stats-grid">
         <article class="stat-card reveal"><div class="card-top"><span>RÉCORD DEL EQUIPO</span><span class="stat-icon">W/L</span></div><div class="stat-number" id="teamRecord">— <small>G-P</small></div><p id="recordNote">Esperando fuente de datos</p><div class="stat-bottom"><span class="tiny-line"></span><span>Temporada actual</span></div></article>
@@ -57,12 +71,17 @@
       <div class="section-subhead"><div><h3>Tabla de posiciones</h3><p>Vista de ejemplo; se actualizará desde la fuente configurada.</p></div><span class="pill">LIDOM</span></div>
       <div class="table-card"><div class="table-scroll"><table><thead><tr><th>EQUIPO</th><th>G</th><th>P</th><th>PCT</th><th>RACHA</th></tr></thead><tbody id="standingsBody"><tr><td colspan="5" class="empty-row">Conecta una API de estadísticas para mostrar la tabla oficial.</td></tr></tbody></table></div></div>
       <div class="stats-footer"><span><i class="pulse-dot"></i> Fuente de datos</span><span id="apiStatus">API no configurada · sin datos en vivo</span><button class="text-button" id="refreshData">Actualizar datos ↻</button></div>
+      <div class="team-actions"><a class="button button-outline" href="#proximos" data-view="calendario">Próximos partidos ↗</a><a class="button button-outline" href="#equipo" data-view="calendario">Posiciones ↑</a><a class="button button-blue" href="#estadisticas" data-view="numeritos">Estadísticas de jugadores ↗</a></div>
 
+    </section>
+
+    <section class="wrap section" id="estadisticas" data-page="numeritos">
+      <div class="section-heading reveal"><div><div class="eyebrow">BATEADORES Y LANZADORES</div><h2>ESTADÍSTICAS <em>DEL LICEY</em></h2></div><p>Consulta los numeritos individuales del roster. Las cifras dependen de la fuente de datos conectada.</p></div>
       <div class="roster-section" id="roster">
         <div class="section-subhead roster-heading"><div><h3>Numeritos del roster</h3><p>Consulta los bateadores y lanzadores del Licey en una sola sección.</p></div><span class="pill">JUGADORES</span></div>
         <div class="roster-tabs" role="tablist" aria-label="Estadísticas de jugadores">
-          <button class="roster-tab active" id="hittersTab" role="tab" aria-selected="true" aria-controls="rosterPanel" data-roster="hitters"><span class="roster-tab-icon">B</span><span><b>Bateadores</b><small>AVG · HR · CI · OPS</small></span><span class="tab-arrow">↗</span></button>
-          <button class="roster-tab" id="pitchersTab" role="tab" aria-selected="false" aria-controls="rosterPanel" data-roster="pitchers"><span class="roster-tab-icon">L</span><span><b>Lanzadores</b><small>ERA · WHIP · K · BB</small></span><span class="tab-arrow">↗</span></button>
+          <button class="roster-tab active" id="hittersTab" role="tab" aria-selected="true" aria-controls="rosterPanel" data-roster="hitters"><span class="roster-tab-icon"><svg class="sports-icon bat-icon" viewBox="0 0 64 64" aria-hidden="true"><g transform="rotate(0 32 32)"><path d="M11 49.5 15.5 54l7.2-7.2-4.5-4.5Z" fill="#9B6038" stroke="#F3D2A7" stroke-width="1.8"/><path d="M17.5 43.8 43 18.3c4.7-4.7 8.9-7.8 12-7.8 2.1 0 3.2 1.2 3.2 3.2 0 3.1-3.1 7.3-7.8 12L24.9 51.2c-1.1 1.1-2.9 1.1-4 0l-3.4-3.4c-1.1-1.1-1.1-2.9 0-4Z" fill="#C58A52" stroke="#F8D9AE" stroke-width="2" stroke-linejoin="round"/><path d="M21 42.2 45.7 17.5M24.4 45.4 48.9 20.9" stroke="#8B542E" stroke-width="1.4" stroke-linecap="round"/><path d="M13 48l5 5M16 44.5l5 5" stroke="#F8D9AE" stroke-width="1.5" stroke-linecap="round"/><path d="M48.5 13.8l3.7 3.7" stroke="#FFF0D6" stroke-width="1.8" stroke-linecap="round"/></g></svg></span><span><b>Bateadores</b><small>AVG · HR · CI · OPS</small></span><span class="tab-arrow">↗</span></button>
+          <button class="roster-tab" id="pitchersTab" role="tab" aria-selected="false" aria-controls="rosterPanel" data-roster="pitchers"><span class="roster-tab-icon"><svg class="sports-icon glove-icon" viewBox="0 0 64 64" aria-hidden="true"><path d="M16 29 12 17c-.7-2.1.2-4.3 2.2-5 2-.7 4 .5 4.8 2.5l5 11-1-14c-.1-2.3 1.4-4 3.6-4.1 2.2-.1 3.8 1.5 4 3.7l1 13 2-11c.4-2.1 2.2-3.4 4.2-3 2.1.4 3.2 2.3 2.8 4.4l-1.7 12 3.8-7.3c1-1.9 3-2.5 4.8-1.5 1.8 1 2.3 3 1.3 4.9L43 37c-1.8 3.4-4.1 6.3-7.1 8.5L31 49l-13-5-3-7c-1.2-2.7-.6-5.7 1.7-8Z" fill="#A86B3F" stroke="#E8BD8E" stroke-width="1.8" stroke-linejoin="round"/><path d="m19 31 8 9m-2-15 8 13m3-14 3 10" stroke="#E8BD8E" stroke-width="2" stroke-linecap="round"/><circle cx="47" cy="46" r="11" fill="#F5F3EA" stroke="#D8D4C8" stroke-width="1.5"/><path d="M41 38c4 4 4 12 0 16M53 38c-4 4-4 12 0 16" fill="none" stroke="#D94A4A" stroke-width="1.8"/></svg></span><span><b>Lanzadores</b><small>ERA · WHIP · K · BB</small></span><span class="tab-arrow">↗</span></button>
         </div>
         <div class="roster-panel" id="rosterPanel" role="tabpanel" aria-labelledby="hittersTab">
           <div class="roster-panel-head"><div><h4 id="rosterTitle">Bateadores del roster</h4><p id="rosterDescription">Promedio, jonrones, carreras impulsadas y OPS.</p></div><a class="official-stats-link" href="https://lidom.com/estadisticas_v2-0/equipos/tigres-del-licey" target="_blank" rel="noopener noreferrer">Ver estadísticas en LIDOM ↗</a></div>
@@ -105,24 +124,34 @@
       <p class="route-disclaimer">Los enlaces abren sitios externos de transmisión. La disponibilidad y los derechos de emisión dependen de esos sitios.</p>
     </section>
 
-    <section class="wrap section" id="calendario" data-page="calendario">
-      <div class="section-heading reveal"><div><div class="eyebrow">QUE NO SE TE PASE UN JUEGO</div><h2>EL <em>CALENDARIO</em></h2></div><p>Partidos, horarios y resultados. Se mostrarán aquí al conectar una fuente oficial.</p></div>
+    <section class="wrap section history-page" id="historia" data-page="historia">
+      <div class="section-heading reveal"><div><div class="eyebrow">24 CORONAS · UNA HISTORIA AZUL</div><h2>LA HISTORIA DE <em>UNA GRANDEZA</em></h2></div><p>Explora los campeonatos nacionales de los Tigres del Licey. Selecciona una corona para conocer la temporada, la final y sus protagonistas.</p></div>
+      <div class="history-banner reveal"><div class="history-crown">♛</div><div><span class="pill">PALMARÉS LIDOM</span><h3>24 CORONAS. UNA HISTORIA AZUL.</h3><p>Desde 1951 hasta el bicampeonato de 2023-24.</p></div><div class="history-total"><strong>24</strong><span>CAMPEONATOS</span></div></div>
+      <div class="history-layout">
+        <div class="history-map-panel reveal"><div class="section-subhead"><div><h3>Mapa de campeonatos</h3><p>Selecciona un año para abrir su ficha histórica.</p></div><span class="pill">24 CORONAS</span></div><div class="history-map" id="historyMap" aria-label="Mapa interactivo de los 24 campeonatos"></div><p class="history-help">Los títulos están ordenados cronológicamente. En las fichas se distingue la información documentada de los datos históricos aún pendientes de confirmar.</p></div>
+        <article class="history-detail reveal" id="historyDetail" aria-live="polite"><div class="history-detail-top"><span class="pill">CORONA #1</span><span class="history-detail-icon">♛</span></div><div class="eyebrow">PRIMER CAMPEONATO DE LIDOM</div><h3>1951</h3><p class="history-detail-lead">El Licey inauguró su palmarés en la etapa moderna de la pelota invernal dominicana.</p><div class="history-facts"><div><span>RIVAL</span><strong>Leones del Escogido</strong></div><div><span>RESULTADO DE LA FINAL</span><strong>4–1</strong></div><div><span>MÁNAGER</span><strong>Manuel Henríquez</strong></div><div><span>MVP DE LA SERIE FINAL</span><strong>Alonzo Perry</strong></div></div><p class="history-detail-story">Los Tigres conquistaron el primer campeonato de la liga profesional dominicana en 1951. Esta ficha reúne datos publicados sobre el título inaugural.</p><a class="history-source" href="https://hoy.com.do/deportes/paseo-por-las-24-coronas-del-licey_987295.html" target="_blank" rel="noopener noreferrer">Consultar fuente histórica ↗</a></article>
+      </div>
+      <div class="history-note"><strong>Nota histórica:</strong> aquí se muestran los 24 campeonatos nacionales de LIDOM. Los títulos de Serie del Caribe se contabilizan aparte. Los MVP o resultados que no estén confirmados en fuentes consultables se marcarán como “dato por verificar”, no se inventarán.</div>
+    </section>
+
+    <section class="wrap section" id="proximos" data-page="calendario">
+      <div class="section-heading reveal"><div><div class="eyebrow">DENTRO DE EQUIPO</div><h2>PRÓXIMOS <em>PARTIDOS</em></h2></div><p>Partidos, horarios y resultados. Se mostrarán aquí al conectar una fuente oficial.</p></div>
       <div class="calendar-placeholder reveal"><div class="calendar-symbol">▦</div><div><h3>La próxima entrada empieza aquí</h3><p>El calendario real todavía no está conectado. No mostraremos fechas ni abridores inventados.</p></div><span class="pill">PENDIENTE DE API</span></div>
     </section>
 
     <section class="wrap section social-page" id="redes" data-page="redes">
       <div class="section-heading"><div><div class="eyebrow">CONECTA CON LA FANATICADA</div><h2>SÍGUENOS EN <em>LAS REDES</em></h2></div><p>Encuentra las cuentas oficiales del Licey, nuestra comunidad y las redes del creador.</p></div>
       <div class="social-grid">
-        <a class="social-card" href="https://youtube.com/@tigresdellicey1?si=CbefSW8PGmhfurzq" target="_blank" rel="noopener noreferrer"><span class="social-symbol">YT</span><span><b>YouTube</b><small>Oficial de los Tigres del Licey</small></span><span class="social-arrow">↗</span></a>
-        <a class="social-card" href="https://www.instagram.com/tigresdellicey?obrf=bGNqZGl0NWNpY3Vw" target="_blank" rel="noopener noreferrer"><span class="social-symbol">IG</span><span><b>Instagram</b><small>Oficial de los Tigres del Licey</small></span><span class="social-arrow">↗</span></a>
-        <a class="social-card" href="https://www.instagram.com/bandaazultl?mdxt=amo5bTVkejQ5MXM1" target="_blank" rel="noopener noreferrer"><span class="social-symbol">CA</span><span><b>Instagram</b><small>Nuestra comunidad Chercha Azul</small></span><span class="social-arrow">↗</span></a>
-        <a class="social-card" href="https://x.com/BandaAzulTL" target="_blank" rel="noopener noreferrer"><span class="social-symbol">X</span><span><b>Twitter / X</b><small>Banda Azul TL</small></span><span class="social-arrow">↗</span></a>
-        <a class="social-card" href="https://chat.whatsapp.com/HTqJZsSCxWyADUOQFgG9Iy?s=cl&amp;p=i&amp;mlu=4&amp;ilr=4&amp;iam=0" target="_blank" rel="noopener noreferrer"><span class="social-symbol">WA</span><span><b>Grupo de WhatsApp</b><small>Únete a la conversación azul</small></span><span class="social-arrow">↗</span></a>
+        <a class="social-card" href="https://youtube.com/@tigresdellicey1?si=CbefSW8PGmhfurzq" target="_blank" rel="noopener noreferrer"><span class="social-symbol social-youtube"><svg class="brand-icon youtube-icon" viewBox="0 0 48 48" aria-hidden="true"><rect x="3" y="8" width="42" height="32" rx="9" fill="#FF0033"/><path d="M20 16.5 32 24 20 31.5Z" fill="#fff"/></svg></span><span><b>YouTube</b><small>Oficial de los Tigres del Licey</small></span><span class="social-arrow">↗</span></a>
+        <a class="social-card" href="https://www.instagram.com/tigresdellicey?obrf=bGNqZGl0NWNpY3Vw" target="_blank" rel="noopener noreferrer"><span class="social-symbol social-instagram"><svg class="brand-icon instagram-icon" viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="igGradient" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#FFD776"/><stop offset=".35" stop-color="#FF4D67"/><stop offset=".68" stop-color="#C837AB"/><stop offset="1" stop-color="#615BFF"/></linearGradient></defs><rect x="2" y="2" width="44" height="44" rx="13" fill="url(#igGradient)"/><rect x="11" y="11" width="26" height="26" rx="8" fill="none" stroke="#fff" stroke-width="3.5"/><circle cx="24" cy="24" r="6.5" fill="none" stroke="#fff" stroke-width="3.5"/><circle cx="33" cy="15" r="2.2" fill="#fff"/></svg></span><span><b>Instagram</b><small>Oficial de los Tigres del Licey</small></span><span class="social-arrow">↗</span></a>
+        <a class="social-card" href="https://www.instagram.com/bandaazultl?mdxt=amo5bTVkejQ5MXM1" target="_blank" rel="noopener noreferrer"><span class="social-symbol social-instagram"><svg class="brand-icon instagram-icon" viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="igGradient" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#FFD776"/><stop offset=".35" stop-color="#FF4D67"/><stop offset=".68" stop-color="#C837AB"/><stop offset="1" stop-color="#615BFF"/></linearGradient></defs><rect x="2" y="2" width="44" height="44" rx="13" fill="url(#igGradient)"/><rect x="11" y="11" width="26" height="26" rx="8" fill="none" stroke="#fff" stroke-width="3.5"/><circle cx="24" cy="24" r="6.5" fill="none" stroke="#fff" stroke-width="3.5"/><circle cx="33" cy="15" r="2.2" fill="#fff"/></svg></span><span><b>Instagram</b><small>Nuestra comunidad Chercha Azul</small></span><span class="social-arrow">↗</span></a>
+        <a class="social-card" href="https://x.com/BandaAzulTL" target="_blank" rel="noopener noreferrer"><span class="social-symbol social-x"><svg class="brand-icon x-icon" viewBox="0 0 48 48" aria-hidden="true"><rect x="2" y="2" width="44" height="44" rx="12" fill="#050505"/><path d="M12 10h7.3l8.2 11 9.2-11H39L29.1 22.2 40 38h-7.3l-8.8-11.8L14 38h-5l10.6-13.1Zm6.8 4 14.3 20h2.2L21 14Z" fill="#fff"/></svg></span><span><b>Twitter / X</b><small>Banda Azul TL</small></span><span class="social-arrow">↗</span></a>
+        <a class="social-card" href="https://chat.whatsapp.com/HTqJZsSCxWyADUOQFgG9Iy?s=cl&amp;p=i&amp;mlu=4&amp;ilr=4&amp;iam=0" target="_blank" rel="noopener noreferrer"><span class="social-symbol social-whatsapp"><svg class="brand-icon whatsapp-icon" viewBox="0 0 48 48" aria-hidden="true"><rect x="2" y="2" width="44" height="44" rx="12" fill="#18C96E"/><path d="M24 10.5a13 13 0 0 0-11.2 19.6L11 37l7.1-1.8A13 13 0 1 0 24 10.5Z" fill="none" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"/><path d="M19 17.5c-.8-.3-1.6.2-2 1.1-.6 1.3-.5 3.1.8 5.2 1.7 2.8 4.1 5 7.2 6.1 1.8.7 3.4.3 4.3-.7.7-.8.8-1.8.4-2.2l-3.1-1.5c-.5-.2-.8-.1-1.1.4l-1.1 1.3c-1.9-.7-3.8-2.5-4.5-4.2l1.1-1.3c.3-.4.3-.8.1-1.2l-1.2-2.7c-.2-.4-.5-.4-.9-.3Z" fill="#fff"/></svg></span><span><b>Grupo de WhatsApp</b><small>Únete a la conversación azul</small></span><span class="social-arrow">↗</span></a>
       </div>
       <p class="social-note" id="socialNote" aria-live="polite">Selecciona una tarjeta para visitar cada red social.</p>
       <div class="section-heading creator-heading"><div><div class="eyebrow">OTRAS CUENTAS</div><h2>REDES SOCIALES <em>DEL CREADOR</em></h2></div><p>Encuentra también las redes sociales del creador de este proyecto.</p></div>
       <div class="social-grid creator-social-grid">
-        <a class="social-card" href="https://www.instagram.com/rodrigoxsy?srtk=MTMwMHpsdDY1cTZidg%3D%3D&amp;utm_source=qr" target="_blank" rel="noopener noreferrer"><span class="social-symbol">IG</span><span><b>Instagram del creador</b><small>Perfil de Rodrigo</small></span><span class="social-arrow">↗</span></a>
+        <a class="social-card" href="https://www.instagram.com/rodrigoxsy?srtk=MTMwMHpsdDY1cTZidg%3D%3D&amp;utm_source=qr" target="_blank" rel="noopener noreferrer"><span class="social-symbol social-instagram"><svg class="brand-icon instagram-icon" viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="igGradient" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#FFD776"/><stop offset=".35" stop-color="#FF4D67"/><stop offset=".68" stop-color="#C837AB"/><stop offset="1" stop-color="#615BFF"/></linearGradient></defs><rect x="2" y="2" width="44" height="44" rx="13" fill="url(#igGradient)"/><rect x="11" y="11" width="26" height="26" rx="8" fill="none" stroke="#fff" stroke-width="3.5"/><circle cx="24" cy="24" r="6.5" fill="none" stroke="#fff" stroke-width="3.5"/><circle cx="33" cy="15" r="2.2" fill="#fff"/></svg></span><span><b>Instagram del creador</b><small>Perfil de Rodrigo</small></span><span class="social-arrow">↗</span></a>
       </div>
     </section>
 
