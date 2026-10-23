@@ -15,8 +15,8 @@
   const pages = [...document.querySelectorAll("[data-page]")];
   const navLinks = [...document.querySelectorAll("[data-view]")];
   function showPage(view, updateHash = true) {
-    view = ({equipo:"calendario",posiciones:"calendario",proximos:"calendario",estadisticas:"numeritos",noticias:"redes",comunidad:"chercha",whatsapp:"chercha"})[view] || view;
-    const valid = ["inicio", "numeritos", "chercha", "calendario", "redes", "ruta", "historia"].includes(view) ? view : "inicio";
+    view = ({equipo:"calendario",posiciones:"calendario",proximos:"calendario",estadisticas:"numeritos",noticias:"noticias",comunidad:"chercha",whatsapp:"chercha"})[view] || view;
+    const valid = ["noticias", "inicio", "numeritos", "chercha", "calendario", "redes", "ruta", "historia"].includes(view) ? view : "inicio";
     pages.forEach(page => page.classList.toggle("page-hidden", page.dataset.page !== valid));
     nav.querySelectorAll("a[data-view]").forEach(a => a.classList.toggle("active", a.dataset.view === valid));
     nav.classList.remove("open"); menu.setAttribute("aria-expanded", "false"); menu.textContent = "☰";
@@ -97,7 +97,7 @@
   }));
 
   // Roster stats panel. Data is supplied by the configured API; no fake roster rows are created.
-  let rosterMode = "hitters";
+  let rosterMode = "hitters", sortKey = null, sortDir = -1;
   let rosterRows = { hitters: [], pitchers: [] };
   const rosterMeta = {
     hitters: { title: "Estadísticas de bateadores", description: "Promedio, jonrones, carreras impulsadas y OPS.", columns: ["JUGADOR","J","H","HR","CI","AVG","OPS"], keys: ["name","games","hits","hr","rbi","avg","ops"] },
@@ -116,7 +116,9 @@
     const head = $("rosterTableHead");
     head.innerHTML = "<tr>" + meta.columns.map(c => `<th>${escapeText(c)}</th>`).join("") + "</tr>";
     const query = clean($("rosterSearch").value,80).toLocaleLowerCase("es");
-    const rows = rosterRows[rosterMode].filter(row => clean(row.name,100).toLocaleLowerCase("es").includes(query));
+    let rows = rosterRows[rosterMode].filter(row => clean(row.name,100).toLocaleLowerCase("es").includes(query));
+    head.querySelectorAll("th").forEach((th, i) => { th.style.cursor = "pointer"; th.title = "Ordenar por esta columna"; th.addEventListener("click", () => { const k = meta.keys[i]; sortDir = (k === "name" || k === "era" || k === "whip") ? 1 : -1; sortKey = k; renderRoster(); }); });
+    if (sortKey) rows = rows.slice().sort((a, b) => { if (sortKey === "name") return String(a.name).localeCompare(String(b.name), "es") * sortDir; const f = v => { const n = parseFloat(v); return isNaN(n) ? (sortDir > 0 ? 1e9 : -1e9) : n; }; return (f(a[sortKey]) - f(b[sortKey])) * sortDir; });
     $("rosterCount").textContent = `${rows.length} jugador${rows.length === 1 ? "" : "es"}`;
     const body = $("rosterTableBody");
     body.replaceChildren();
@@ -142,7 +144,7 @@
     });
   }
   document.querySelectorAll("[data-roster]").forEach(button => button.addEventListener("click", () => {
-    rosterMode = button.dataset.roster; renderRoster();
+    rosterMode = button.dataset.roster; sortKey = null; renderRoster();
   }));
   $("rosterSearch").addEventListener("input", renderRoster);
   renderRoster();
@@ -168,6 +170,20 @@
       const res = document.createElement("b"); res.className = "sch-score"; res.textContent = score;
       el.append(when, teams, res); box.appendChild(el);
     });
+  }
+  let bannerTimer;
+  function setBanner(g) {
+    const b = $("gameBanner"); if (!b) return; clearInterval(bannerTimer);
+    if (!g || !g.gameDate) { b.hidden = true; return; }
+    const t = new Date(g.gameDate).getTime(), day = d => new Date(d).toLocaleDateString("en-CA", {timeZone:"America/Santo_Domingo"});
+    const rival = isLicey(g.home) ? g.away : g.home, today = day(t) === day(Date.now());
+    const tick = () => {
+      const ms = t - Date.now(); let c;
+      if (ms <= 0) c = "¡Está por empezar o ya empezó!";
+      else { const h = Math.floor(ms/36e5), m = Math.floor(ms%36e5/6e4), d = Math.floor(h/24); c = d > 0 ? `${d} d ${h%24} h ${m} min` : `${h} h ${m} min ${Math.floor(ms%6e4/1e3)} s`; }
+      b.innerHTML = `<b>${today ? "HOY JUEGA EL LICEY" : "PRÓXIMO JUEGO"}</b><span>vs ${escapeText(rival)} · ${escapeText(dt(g.gameDate))}</span><span class="gb-count">${escapeText(c)}</span><a href="#ruta" data-view="ruta">Ver transmisión ↗</a>`;
+    };
+    b.onclick = e => { const a = e.target.closest("a[data-view]"); if (a) { e.preventDefault(); showPage(a.dataset.view); } }; b.hidden = false; tick(); bannerTimer = setInterval(tick, 1000);
   }
   async function getJson(url, ms) {
     const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), ms);
@@ -196,7 +212,7 @@
         st.forEach(team => { const tr = document.createElement("tr"); if (isLicey(team.team)) tr.className = "me";
           [team.team, team.wins, team.losses, team.pct, team.streak].forEach(val => { const td=document.createElement("td"); td.textContent = val == null ? "—" : String(val); tr.appendChild(td); }); body.appendChild(tr); });
       }
-      renderSchedule(sched);
+      renderSchedule(sched); setBanner(nx);
       if (data.roster && Array.isArray(data.roster.hitters)) rosterRows.hitters = data.roster.hitters;
       if (data.roster && Array.isArray(data.roster.pitchers)) rosterRows.pitchers = data.roster.pitchers;
       renderRoster();
@@ -206,7 +222,30 @@
       apiStatus.textContent = "No se pudo consultar la API · pulsa Actualizar datos para reintentar";
     } finally { clearTimeout(slow); }
   }
+  const newsApi = (window.CHERCHA_CONFIG && window.CHERCHA_CONFIG.newsApiUrl) || api.replace(/\/api\/stats$/, "/api/news");
+  const okLicey = u => { try { const x = new URL(u); return x.protocol === "https:" && /(^|\.)licey\.com$/.test(x.hostname); } catch { return false; } };
+  async function loadNews() {
+    const grid = $("newsGrid"); if (!grid || !newsApi) return;
+    try {
+      let data; try { data = await getJson(newsApi, 70000); } catch (e) { data = await getJson(newsApi, 70000); }
+      const items = (data.items || []).filter(n => n && n.title && okLicey(n.url));
+      grid.replaceChildren();
+      if (!items.length) { grid.innerHTML = '<p class="empty-row">No hay noticias disponibles ahora.</p>'; return; }
+      items.forEach(n => {
+        const a = document.createElement("a"); a.className = "news-card"; a.href = n.url; a.target = "_blank"; a.rel = "noopener noreferrer";
+        if (n.image && okLicey(n.image)) { const img = document.createElement("img"); img.src = n.image; img.alt = ""; img.loading = "lazy"; a.appendChild(img); }
+        const body = document.createElement("div"); body.className = "news-body";
+        const t = document.createElement("time"); t.textContent = n.date ? new Date(n.date).toLocaleDateString("es-DO", {day:"numeric", month:"short", year:"numeric", timeZone:"America/Santo_Domingo"}) : "";
+        const h = document.createElement("h3"); h.textContent = n.title;
+        const p = document.createElement("p"); p.textContent = n.excerpt || "";
+        const m = document.createElement("span"); m.className = "news-more"; m.textContent = "Leer en Licey.com ↗";
+        body.append(t, h, p, m); a.appendChild(body); grid.appendChild(a);
+      });
+    } catch (err) { console.error("Noticias:", err); grid.innerHTML = '<p class="empty-row">No se pudieron cargar las noticias. <a href="https://www.licey.com/noticias/" target="_blank" rel="noopener noreferrer">Ver en Licey.com ↗</a></p>'; }
+  }
   $("refreshData").addEventListener("click", refreshStats);
+  $("refreshData").addEventListener("click", loadNews);
+  loadNews();
   refreshStats();
 
   // Community demo data is local to this browser. A shared production community needs backend + moderation.
