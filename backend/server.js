@@ -7,8 +7,7 @@ const MLB_API = 'https://statsapi.mlb.com/api/v1';
 const LIDOM_LEAGUE_ID = '131';
 const LIDOM_SPORT_ID = '17';
 const CACHE_MS = 5 * 60 * 1000;
-let cached = null;
-let cachedAt = 0;
+const statsCache = new Map();   // temporada -> { data, at }
 
 const TEAM_NAMES = {
   'tigres del licey': 'Tigres del Licey',
@@ -54,6 +53,8 @@ function statsRows(data, teamFilter, group) {
     .map(x => {
       const s = x.stat || {};
       if (group === 'hitting') return {
+        id: x.player.id ?? null,
+        pos: x.position?.abbreviation ?? null,
         name: x.player.fullName,
         team: canonicalTeam(x.team.name),
         games: s.gamesPlayed ?? null,
@@ -62,6 +63,9 @@ function statsRows(data, teamFilter, group) {
         rbi: s.rbi ?? null,
         avg: s.avg ?? null,
         ops: s.ops ?? null,
+        obp: s.obp ?? null,
+        slg: s.slg ?? null,
+        plateAppearances: s.plateAppearances ?? null,
         atBats: s.atBats ?? null,
         runs: s.runs ?? null,
         doubles: s.doubles ?? null,
@@ -69,6 +73,8 @@ function statsRows(data, teamFilter, group) {
         stolenBases: s.stolenBases ?? null
       };
       return {
+        id: x.player.id ?? null,
+        pos: x.position?.abbreviation ?? null,
         name: x.player.fullName,
         team: canonicalTeam(x.team.name),
         games: s.gamesPitched ?? s.gamesPlayed ?? null,
@@ -84,11 +90,11 @@ function statsRows(data, teamFilter, group) {
     });
 }
 
-async function buildStats() {
-  const seasonQuery = `season=${encodeURIComponent(SEASON)}&sportIds=${LIDOM_SPORT_ID}&playerPool=ALL&limit=2000`;
+async function buildStats(season = SEASON) {
+  const seasonQuery = `season=${encodeURIComponent(season)}&sportIds=${LIDOM_SPORT_ID}&playerPool=ALL&limit=2000`;
   const [standingsData, scheduleData, hittingData, pitchingData] = await Promise.all([
-    getJson(`/standings?leagueId=${LIDOM_LEAGUE_ID}&season=${SEASON}&standingsTypes=regularSeason`),
-    getJson(`/schedule?sportId=${LIDOM_SPORT_ID}&leagueId=${LIDOM_LEAGUE_ID}&season=${SEASON}&gameTypes=R`),
+    getJson(`/standings?leagueId=${LIDOM_LEAGUE_ID}&season=${season}&standingsTypes=regularSeason`),
+    getJson(`/schedule?sportId=${LIDOM_SPORT_ID}&leagueId=${LIDOM_LEAGUE_ID}&season=${season}&gameTypes=R`),
     getJson(`/stats?stats=season&group=hitting&${seasonQuery}`),
     getJson(`/stats?stats=season&group=pitching&${seasonQuery}`)
   ]);
@@ -121,7 +127,7 @@ async function buildStats() {
 
   return {
     source: 'MLB Stats API · registros identificados como LIDOM',
-    season: SEASON,
+    season: season,
     updatedAt: new Date().toISOString(),
     note: 'Fuente no oficial de LIDOM. Contrasta los datos con la liga; los campos no disponibles se muestran como —.',
     record: liceyRecord ? { wins: liceyRecord.wins, losses: liceyRecord.losses } : null,
@@ -328,17 +334,19 @@ const server = http.createServer(async (req, res) => {
   if (url.pathname !== '/api/stats' && url.pathname !== '/api/lidom') {
     res.writeHead(404); return res.end(JSON.stringify({ error: 'Ruta no encontrada', available: ['/health', '/api/stats', '/api/news', '/api/rotation', '/api/players', '/api/player/:id', '/api/matchup'] }));
   }
+  const season = validSeason(url.searchParams.get('season'));
+  const hit = statsCache.get(season);
   try {
-    if (cached && Date.now() - cachedAt < CACHE_MS) {
-      res.writeHead(200, { 'Cache-Control': 'public, max-age=60' }); return res.end(JSON.stringify(cached));
+    if (hit && Date.now() - hit.at < CACHE_MS) {
+      res.writeHead(200, { 'Cache-Control': 'public, max-age=60' }); return res.end(JSON.stringify(hit.data));
     }
-    const data = await buildStats();
-    cached = data; cachedAt = Date.now();
+    const data = await buildStats(season);
+    statsCache.set(season, { data, at: Date.now() }); if (statsCache.size > 12) statsCache.delete(statsCache.keys().next().value);
     res.writeHead(200, { 'Cache-Control': 'public, max-age=60' });
     return res.end(JSON.stringify(data));
   } catch (error) {
     console.error(error);
-    if (cached) { res.writeHead(200, { 'X-Stale': '1' }); return res.end(JSON.stringify({ ...cached, stale: true })); }
+    if (hit) { res.writeHead(200, { 'X-Stale': '1' }); return res.end(JSON.stringify({ ...hit.data, stale: true })); }
     res.writeHead(502);
     return res.end(JSON.stringify({ error: 'No se pudieron consultar los datos de LIDOM', detail: error.message }));
   }

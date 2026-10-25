@@ -37,3 +37,7 @@ Los resultados se guardan en caché cinco minutos para reducir solicitudes. La f
 - `GET /api/matchup?batter={id}&pitcher={id}`: `stats=vsPlayer&opposingPlayerId=`. Devuelve totales y por temporada, no fecha ni resultado de cada turno. Caché 30 min.
 
 Si la fuente no tiene un dato, el backend devuelve `null` y la web muestra «Sin datos» o «Sin enfrentamientos registrados». No se inventan estadísticas.
+
+## Líderes del equipo
+
+`GET /api/stats?season=AAAA` acepta una temporada (por defecto `LIDOM_SEASON`) y guarda una caché de 5 minutos por temporada. Las filas de `roster.hitters` y `roster.pitchers` incluyen `id`, `pos` y, en bateadores, `obp`, `slg` y `plateAppearances`.
