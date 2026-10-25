@@ -5,7 +5,7 @@
   const cfg = window.CHERCHA_CONFIG || {};
   const base = (cfg.matchupApiBase || (cfg.statsApiUrl || "").replace(/\/api\/stats$/, "")).replace(/\/$/, "");
   const $ = id => document.getElementById(id);
-  const st = { league: "lidom", season: String(new Date().getFullYear()), players: [], team: "", pos: "", q: "", shown: 60, token: 0, started: false, meta: null };
+  const st = { league: "lidom", season: String(new Date().getFullYear()), players: [], team: "", pos: "", q: "", shown: 60, token: 0, ltoken: 0, started: false, meta: null };
   const cache = new Map();
   const norm = s => String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
   const dash = v => (v === null || v === undefined || v === "") ? "—" : String(v);
@@ -46,13 +46,13 @@
     $("mlStatus").textContent = !st.players.length ? "" : `${list.length} de ${st.players.length} jugadores` + (m ? ` · ${m.sources.roster} desde plantillas, ${m.sources.stats} desde estadísticas · fuente: MLB Stats API (no oficial)` : "");
     if (st.players.length && !list.length) box.append(h("p", "ml-empty", "No hay jugadores que coincidan con la búsqueda y los filtros."));
   }
-  async function loadPlayers() {
-    const tok = ++st.token; showView("list"); st.players = []; st.meta = null; st.team = ""; st.pos = "";
+  async function loadPlayers(keepView) {
+    const tok = ++st.ltoken; if (!keepView) showView("list"); st.players = []; st.meta = null; st.team = ""; st.pos = "";
     $("mlList").replaceChildren(); $("mlMore").hidden = true;
     $("mlStatus").textContent = "Cargando plantillas… la primera consulta puede tardar hasta 1 minuto (servidor gratuito).";
     try {
       const d = await api(`/api/players?league=${st.league}&season=${st.season}`);
-      if (tok !== st.token) return;
+      if (tok !== st.ltoken) return;
       st.players = d.players || []; st.meta = d;
       const teams = [...new Set(st.players.map(p => p.team).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"));
       $("mlTeam").replaceChildren(new Option("Todos", ""), ...teams.map(t => new Option(t, t)));
@@ -61,7 +61,7 @@
       if (!st.players.length) { $("mlStatus").textContent = `La fuente no devuelve plantilla para ${st.league.toUpperCase()} ${st.season}. Prueba otra temporada o liga.`; return; }
       renderList();
     } catch (e) {
-      if (tok !== st.token) return;
+      if (tok !== st.ltoken) return;
       $("mlStatus").textContent = "No se pudo cargar la plantilla (" + e.message + "). ";
       const b = h("button", "ml-link", "Reintentar"); b.type = "button"; b.addEventListener("click", () => { cache.clear(); loadPlayers(); }); $("mlStatus").append(b);
     }
@@ -138,6 +138,12 @@
     });
     return h("div", "ml-mu", h("h4", "ml-sec", "ENFRENTAMIENTO DIRECTO: BATEADOR VS. PITCHER"), h("p", "ml-note", "Historial directo contra un pitcher específico. No es lo mismo que las estadísticas generales contra zurdos o derechos."), h("div", "ml-mu-row", h("div", "ml-search ml-search-sm", input, sug), chip, go), out);
   }
+  /* abre la ficha de un jugador desde otra sección (p. ej. Líderes del equipo) */
+  window.MatchupLab = { open(p, season) {
+    st.league = "lidom"; st.started = true; const s = String(season || st.season);
+    if (!st.players.length || s !== st.season || $("mlLeague").value !== "lidom") { st.season = s; $("mlSeason").value = s; $("mlLeague").value = "lidom"; loadPlayers(true); }
+    openPlayer(p);
+  } };
   /* ---------- arranque ---------- */
   const cy = new Date().getFullYear(); $("mlSeason").replaceChildren(...Array.from({ length: 6 }, (_, i) => new Option(String(cy - i), String(cy - i))));
   $("mlSeason").value = st.season;

@@ -216,9 +216,10 @@
       if (data.roster && Array.isArray(data.roster.hitters)) rosterRows.hitters = data.roster.hitters;
       if (data.roster && Array.isArray(data.roster.pitchers)) rosterRows.pitchers = data.roster.pitchers;
       renderRoster();
+      if (window.ChaLeaders) window.ChaLeaders.update(data);
       apiStatus.textContent = "Datos recibidos · " + (data.season || "temporada por confirmar") + " · " + timeLabel(data.updatedAt || Date.now());
     } catch (err) {
-      console.error("No se pudo actualizar la API de estadísticas:", err);
+      console.error("No se pudo actualizar la API de estadísticas:", err); if (window.ChaLeaders) window.ChaLeaders.error(err.message);
       apiStatus.textContent = "No se pudo consultar la API · pulsa Actualizar datos para reintentar";
     } finally { clearTimeout(slow); }
   }
@@ -277,6 +278,7 @@
   $("refreshData").addEventListener("click", () => { loadNews(); loadRotation(); });
   loadNews(); loadRotation();
   refreshStats();
+  setInterval(() => { if (!document.hidden) refreshStats(); }, 5 * 60 * 1000);   // mismo ritmo que la caché del backend
 
   // Community demo data is local to this browser. A shared production community needs backend + moderation.
   function renderChat() {

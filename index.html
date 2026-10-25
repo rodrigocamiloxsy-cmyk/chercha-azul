@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=20261024">
+  <link rel="stylesheet" href="style.css?v=20261025">
 </head>
 <body>
   <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
@@ -74,6 +74,11 @@
       </div>
       <div class="section-subhead"><div><h3>Rotación abridora</h3><p id="rotationNote">Abridores anunciados por el Licey.</p></div><span class="pill">LICEY.COM</span></div>
       <div class="rotation-list" id="rotationList"><p class="empty-row">Cargando rotación…</p></div>
+      <div class="section-subhead" id="liderEquipo"><div><h3>Líderes del equipo</h3><p>Los mejores del Licey en cada estadística, con datos reales de la fuente conectada.</p></div><span class="pill">DATOS REALES</span></div>
+      <div class="ld-toolbar"><label>Temporada<select id="ldSeason"></select></label><label class="ld-check"><input type="checkbox" id="ldQual" checked> Solo jugadores calificados</label></div>
+      <h4 class="ld-group">LÍDERES DE BATEO</h4><div class="ld-grid" id="ldBat"><p class="empty-row">Cargando líderes…</p></div>
+      <h4 class="ld-group">LÍDERES DE PITCHEO</h4><div class="ld-grid" id="ldPit"><p class="empty-row">Cargando líderes…</p></div>
+      <p class="ld-foot" id="ldFoot"></p>
       <div class="section-subhead"><div><h3>Tabla de posiciones</h3><p>Datos desde la fuente conectada.</p></div><span class="pill">LIDOM</span></div>
       <div class="table-card"><div class="table-scroll"><table><thead><tr><th>EQUIPO</th><th>G</th><th>P</th><th>PCT</th><th>RACHA</th></tr></thead><tbody id="standingsBody"><tr><td colspan="5" class="empty-row">Conecta una API de estadísticas para mostrar la tabla oficial.</td></tr></tbody></table></div></div>
       <div class="stats-footer"><span><i class="pulse-dot"></i> Fuente de datos</span><span id="apiStatus">API no configurada · sin datos en vivo</span><button class="text-button" id="refreshData">Actualizar datos ↻</button></div>
@@ -186,6 +191,6 @@
   </main>
   <a class="creator-corner" href="https://www.instagram.com/rodrigoxsy" target="_blank" rel="noopener noreferrer">Ceo @rodrigoxsy</a>
   <footer class="footer"><div class="wrap footer-inner"><a class="brand footer-brand" href="#inicio" data-view="inicio"><span class="brand-mark">CA</span><span class="brand-word">CHERCHA <b>AZUL</b><small>LA COMUNIDAD AZUL</small></span></a><span>Hecho para la fanaticada azul.</span><a href="#inicio" data-view="inicio">Volver al inicio ↑</a></div><div class="wrap footer-bottom"><span>© <span id="year"></span> Chercha Azul</span><span>Proyecto independiente de comunidad de fanáticos. No es el sitio oficial de los Tigres del Licey ni de LIDOM; los nombres pertenecen a sus titulares. Datos de fuente no oficial.</span></div></footer>
-  <script src="config.js?v=20261024"></script><script src="script.js?v=20261024"></script><script src="matchup.js?v=20261024"></script>
+  <script src="config.js?v=20261025"></script><script src="script.js?v=20261025"></script><script src="matchup.js?v=20261025"></script><script src="leaders.js?v=20261025"></script>
 </body>
 </html>
