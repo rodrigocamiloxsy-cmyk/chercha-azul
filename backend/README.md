@@ -29,3 +29,11 @@ Abre `http://localhost:3000/health` y luego `http://localhost:3000/api/stats`.
 - `GET /api/stats`: récord, próximos y últimos partidos, posiciones y estadísticas individuales de bateadores y lanzadores del Licey.
 
 Los resultados se guardan en caché cinco minutos para reducir solicitudes. La fuente es una API no oficial; compara los datos con LIDOM. Los datos de abridor probable no se rellenan porque todavía no hemos confirmado una fuente fiable para ese campo.
+
+## Matchup Lab
+
+- `GET /api/players?league=lidom|mlb&season=AAAA`: plantilla completa. Une las plantillas de cada equipo (`/teams/{id}/roster`) con los jugadores que tienen estadísticas (`/stats`, paginado de 1000 en 1000). Caché 6 h.
+- `GET /api/player/{id}?league=&season=`: bio, estadísticas de bateo y pitcheo y splits `vl`/`vr` (`stats=statSplits&sitCodes=vl,vr`). Caché 10 min.
+- `GET /api/matchup?batter={id}&pitcher={id}`: `stats=vsPlayer&opposingPlayerId=`. Devuelve totales y por temporada, no fecha ni resultado de cada turno. Caché 30 min.
+
+Si la fuente no tiene un dato, el backend devuelve `null` y la web muestra «Sin datos» o «Sin enfrentamientos registrados». No se inventan estadísticas.

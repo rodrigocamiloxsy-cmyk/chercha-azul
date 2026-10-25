@@ -216,6 +216,84 @@ async function buildRotation() {
 }
 module.exports = { parseRotation };
 
+// ---- Matchup Lab: plantillas, fichas, splits y enfrentamientos (MLB Stats API) ----
+const LEAGUES = { lidom: { sportId: '17', leagueId: '131' }, mlb: { sportId: '1', leagueId: null } };
+const memo = new Map();
+async function memoized(key, ttl, fn) {
+  const h = memo.get(key);
+  if (h && Date.now() - h.t < ttl) return h.v;
+  try { const v = await fn(); memo.set(key, { t: Date.now(), v }); if (memo.size > 400) memo.delete(memo.keys().next().value); return v; }
+  catch (e) { if (h) return { ...h.v, stale: true }; throw e; }
+}
+const pickStats = (o, map) => Object.fromEntries(map.map(([to, from]) => [to, o?.[from] ?? null]));
+const HIT = [['avg','avg'],['obp','obp'],['slg','slg'],['ops','ops'],['ab','atBats'],['h','hits'],['hr','homeRuns'],['rbi','rbi'],['r','runs'],['bb','baseOnBalls'],['so','strikeOuts'],['sb','stolenBases'],['pa','plateAppearances'],['g','gamesPlayed']];
+const PIT = [['era','era'],['whip','whip'],['w','wins'],['l','losses'],['ip','inningsPitched'],['so','strikeOuts'],['bb','baseOnBalls'],['h','hits'],['hr','homeRuns'],['sv','saves'],['g','gamesPitched']];
+const firstStat = d => { for (const b of d?.stats || []) { const s = (b.splits || [])[0]; if (s?.stat && Object.keys(s.stat).length) return s.stat; } return null; };
+const validSeason = v => { const n = Number(v); return Number.isInteger(n) && n >= 1990 && n <= new Date().getFullYear() + 1 ? String(n) : SEASON; };
+
+async function leaguePlayers(league, season) {
+  const L = LEAGUES[league];
+  const teams = ((await getJson(`/teams?sportId=${L.sportId}&season=${season}`)).teams || []).filter(t => !L.leagueId || !t.league?.id || String(t.league.id) === L.leagueId);
+  const byId = new Map(); const sources = { roster: 0, stats: 0 };
+  const rosters = await Promise.all(teams.map(t => getJson(`/teams/${t.id}/roster?rosterType=fullSeason&season=${season}`).then(r => [t, r.roster || []]).catch(() => [t, []])));
+  for (const [t, list] of rosters) for (const r of list) if (r.person?.id && !byId.has(r.person.id)) { byId.set(r.person.id, { id: r.person.id, name: r.person.fullName, team: canonicalTeam(t.name), pos: r.position?.abbreviation || null, type: r.position?.type || null }); sources.roster++; }
+  if (league === 'lidom') for (const group of ['hitting', 'pitching']) {   // completa con jugadores que tengan estadísticas (paginado)
+    for (let off = 0; off < 5000; off += 1000) {
+      const data = await getJson(`/stats?stats=season&group=${group}&season=${season}&sportIds=${L.sportId}&playerPool=ALL&limit=1000&offset=${off}`).catch(() => null);
+      const all = (data?.stats || []).flatMap(b => b.splits || []);
+      for (const x of all) if (x.league?.name === 'LIDOM' && x.player?.id && !byId.has(x.player.id)) { byId.set(x.player.id, { id: x.player.id, name: x.player.fullName, team: canonicalTeam(x.team?.name || ''), pos: x.position?.abbreviation || null, type: group === 'pitching' ? 'Pitcher' : 'Hitter' }); sources.stats++; }
+      if (all.length < 1000) break;
+    }
+  }
+  const players = [...byId.values()].filter(p => p.name).sort((a, b) => a.name.localeCompare(b.name, 'es'));
+  return { league, season, count: players.length, sources, teams: teams.length, players };
+}
+async function buildPlayer(id, league, season) {
+  const L = LEAGUES[league], q = `season=${season}&sportId=${L.sportId}`, errors = [];
+  const safe = p => p.catch(e => { errors.push(e.message); return null; });
+  const [bio, hit, pit, spl] = await Promise.all([
+    safe(getJson(`/people/${id}?hydrate=currentTeam`)),
+    safe(getJson(`/people/${id}/stats?stats=season&group=hitting&${q}`)),
+    safe(getJson(`/people/${id}/stats?stats=season&group=pitching&${q}`)),
+    safe(getJson(`/people/${id}/stats?stats=statSplits&group=hitting&sitCodes=vl,vr&${q}`))
+  ]);
+  const person = bio?.people?.[0] || null;
+  const h = firstStat(hit), p = firstStat(pit);
+  const hitting = h && (Number(h.atBats || 0) + Number(h.plateAppearances || 0) > 0) ? pickStats(h, HIT) : null;
+  const pitching = p && Number(p.gamesPitched || 0) > 0 ? pickStats(p, PIT) : null;
+  const splits = {};
+  for (const b of spl?.stats || []) for (const s of b.splits || []) { const c = s.split?.code; if ((c === 'vl' || c === 'vr') && s.stat) splits[c] = pickStats(s.stat, HIT); }
+  return { id: Number(id), league, season, name: person?.fullName || null, team: person?.currentTeam?.name ? canonicalTeam(person.currentTeam.name) : null,
+    pos: person?.primaryPosition?.abbreviation || null, bats: person?.batSide?.code || null, throws: person?.pitchHand?.code || null,
+    hitting, pitching, splits: Object.keys(splits).length ? splits : null, errors };
+}
+async function buildMatchup(batter, pitcher) {
+  const data = await getJson(`/people/${batter}/stats?stats=vsPlayer&group=hitting&opposingPlayerId=${pitcher}`);
+  const name = b => String(b.type?.displayName || '');
+  const blocks = data.stats || [];
+  const total = firstStat({ stats: blocks.filter(b => /total/i.test(name(b))) });
+  const bySeason = (blocks.find(b => name(b) === 'vsPlayer')?.splits || []).filter(s => s.stat).map(s => ({ season: s.season || null, team: s.team?.name || null, ...pickStats(s.stat, HIT) }));
+  const found = !!total && Number(total.atBats || 0) + Number(total.plateAppearances || 0) > 0;
+  return { batter: Number(batter), pitcher: Number(pitcher), found, total: found ? pickStats(total, HIT) : null, bySeason: found ? bySeason : [], encounters: [],
+    note: 'La fuente entrega totales y por temporada; no incluye fecha ni resultado de cada turno.' };
+}
+async function handleLab(url, res) {
+  const league = LEAGUES[url.searchParams.get('league')] ? url.searchParams.get('league') : 'lidom';
+  const season = validSeason(url.searchParams.get('season'));
+  try {
+    let data;
+    if (url.pathname === '/api/players') data = await memoized(`pl:${league}:${season}`, 6 * 3600e3, () => leaguePlayers(league, season));
+    else if (url.pathname === '/api/matchup') {
+      const b = url.searchParams.get('batter'), p = url.searchParams.get('pitcher');
+      if (!/^\d+$/.test(b || '') || !/^\d+$/.test(p || '')) { res.writeHead(400); return res.end(JSON.stringify({ error: 'Parámetros batter y pitcher inválidos' })); }
+      data = await memoized(`mu:${b}:${p}`, 30 * 60e3, () => buildMatchup(b, p));
+    } else { const id = url.pathname.split('/').pop(); data = await memoized(`p:${id}:${league}:${season}`, 10 * 60e3, () => buildPlayer(id, league, season)); }
+    res.writeHead(200, { 'Cache-Control': 'public, max-age=120' }); return res.end(JSON.stringify(data));
+  } catch (error) {
+    console.error(error); res.writeHead(502); return res.end(JSON.stringify({ error: 'No se pudo consultar la fuente de estadísticas', detail: error.message }));
+  }
+}
+
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   res.setHeader('Access-Control-Allow-Origin', process.env.ALLOWED_ORIGIN || '*');
@@ -226,6 +304,7 @@ const server = http.createServer(async (req, res) => {
   if (url.pathname === '/health') {
     res.writeHead(200); return res.end(JSON.stringify({ ok: true, service: 'chercha-azul-api', season: SEASON }));
   }
+  if (url.pathname === '/api/players' || url.pathname === '/api/matchup' || /^\/api\/player\/\d+$/.test(url.pathname)) return handleLab(url, res);
   if (url.pathname === '/api/news') {
     try {
       if (!newsCache || Date.now() - newsAt >= NEWS_MS) { newsCache = await buildNews(); newsAt = Date.now(); }
@@ -247,7 +326,7 @@ const server = http.createServer(async (req, res) => {
     }
   }
   if (url.pathname !== '/api/stats' && url.pathname !== '/api/lidom') {
-    res.writeHead(404); return res.end(JSON.stringify({ error: 'Ruta no encontrada', available: ['/health', '/api/stats', '/api/news', '/api/rotation'] }));
+    res.writeHead(404); return res.end(JSON.stringify({ error: 'Ruta no encontrada', available: ['/health', '/api/stats', '/api/news', '/api/rotation', '/api/players', '/api/player/:id', '/api/matchup'] }));
   }
   try {
     if (cached && Date.now() - cachedAt < CACHE_MS) {
