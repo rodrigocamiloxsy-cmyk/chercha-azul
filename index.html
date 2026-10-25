@@ -145,6 +145,19 @@
       <div class="schedule-list" id="scheduleList"><p class="empty-row">Cargando calendario…</p></div>
     </section>
 
+    <section class="wrap section ml" id="matchuplab" data-page="numeritos">
+      <div class="section-heading reveal"><div><div class="eyebrow">ANÁLISIS DE ENFRENTAMIENTOS</div><h2>MATCHUP <em>LAB</em></h2></div><p>Plantillas completas, fichas, splits contra zurdos y derechos y enfrentamientos directos. Datos de MLB Stats API (fuente no oficial).</p></div>
+      <div class="ml-filters">
+        <label>Liga<select id="mlLeague"><option value="lidom">LIDOM</option><option value="mlb">MLB</option></select></label>
+        <label>Temporada<select id="mlSeason"></select></label>
+        <label>Equipo<select id="mlTeam"><option value="">Todos</option></select></label>
+        <label>Posición<select id="mlPos"><option value="">Todas</option></select></label>
+      </div>
+      <div class="ml-search"><input id="mlSearch" class="ml-input" type="search" placeholder="Buscar jugador, equipo o posición…" autocomplete="off"><div id="mlSuggest" class="ml-suggest" hidden></div></div>
+      <div id="mlListWrap"><p class="ml-status" id="mlStatus" role="status"></p><div id="mlList" class="ml-grid"></div><button id="mlMore" class="ml-more" type="button" hidden>Mostrar más</button></div>
+      <div id="mlDetail" class="ml-detail" hidden></div>
+    </section>
+
     <section class="wrap section" id="noticias" data-page="noticias">
       <div class="section-heading reveal"><div><div class="eyebrow">DESDE EL SITIO OFICIAL</div><h2>NOTICIAS <em>DEL LICEY</em></h2></div><p>Últimas publicaciones de Licey.com. Cada tarjeta abre la noticia completa en el sitio oficial.</p></div>
       <div class="news-grid" id="newsGrid"><p class="empty-row">Cargando noticias…</p></div>
@@ -173,6 +186,6 @@
   </main>
   <a class="creator-corner" href="https://www.instagram.com/rodrigoxsy" target="_blank" rel="noopener noreferrer">Ceo @rodrigoxsy</a>
   <footer class="footer"><div class="wrap footer-inner"><a class="brand footer-brand" href="#inicio" data-view="inicio"><span class="brand-mark">CA</span><span class="brand-word">CHERCHA <b>AZUL</b><small>LA COMUNIDAD AZUL</small></span></a><span>Hecho para la fanaticada azul.</span><a href="#inicio" data-view="inicio">Volver al inicio ↑</a></div><div class="wrap footer-bottom"><span>© <span id="year"></span> Chercha Azul</span><span>Proyecto independiente de comunidad de fanáticos. No es el sitio oficial de los Tigres del Licey ni de LIDOM; los nombres pertenecen a sus titulares. Datos de fuente no oficial.</span></div></footer>
-  <script src="config.js?v=20261024"></script><script src="script.js?v=20261024"></script>
+  <script src="config.js?v=20261024"></script><script src="script.js?v=20261024"></script><script src="matchup.js?v=20261024"></script>
 </body>
 </html>
